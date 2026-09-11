@@ -1,4 +1,4 @@
-const CACHE_NAME = "observations-v11-corrige-2";
+const CACHE_NAME = "observations-v12-20260911";
 const ASSETS = [
   "./",
   "./index.html",
@@ -27,6 +27,7 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
