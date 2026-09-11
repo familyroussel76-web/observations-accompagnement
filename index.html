@@ -1,0 +1,3410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12355b">
+<link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+  <meta name="application-name" content="Observations">
+  <meta name="apple-mobile-web-app-title" content="Observations">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Observations en accompagnement</title>
+  <style>
+    :root {
+      --navy: #12355b;
+      --navy-dark: #0c2947;
+      --blue: #2f6fa8;
+      --blue-soft: #e8f2f9;
+      --bg: #f3f6f9;
+      --card: #ffffff;
+      --text: #17212b;
+      --muted: #607080;
+      --line: #d7e0e8;
+      --na: #66727d;
+      --p: #e67e22;
+      --s: #238443;
+      --sp: #91d9a0;
+      --sp-text: #123b1d;
+      --amber: #ad6500;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(18, 53, 91, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .hidden { display: none !important; }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      color: #fff;
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      box-shadow: 0 4px 18px rgba(12, 41, 71, .25);
+      padding-top: env(safe-area-inset-top);
+    }
+    .header-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 15px 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .logo {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: var(--navy);
+      background: #fff;
+      font-weight: 950;
+      letter-spacing: -.04em;
+    }
+    .header-copy { min-width: 0; flex: 1; }
+    .header-copy h1 { margin: 0; font-size: clamp(1rem, 4vw, 1.45rem); line-height: 1.15; }
+    .header-copy p { margin: 3px 0 0; color: rgba(255,255,255,.76); font-size: .78rem; }
+
+    main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 16px 13px 112px;
+    }
+
+    .panel {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .section-title {
+      margin: 0 0 5px;
+      font-size: 1.15rem;
+    }
+    .section-copy {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.48;
+      font-size: .91rem;
+    }
+
+    .btn {
+      min-height: 43px;
+      padding: 9px 13px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      font-weight: 800;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .btn:active:not(:disabled) { transform: translateY(1px); }
+    .btn-primary { color: #fff; background: var(--navy); box-shadow: 0 5px 14px rgba(18,53,91,.2); }
+    .btn-primary:hover:not(:disabled) { background: var(--navy-dark); }
+    .btn-secondary { color: var(--navy); background: var(--blue-soft); border-color: #c8deed; }
+    .btn-ghost { color: var(--navy); background: #fff; border-color: var(--line); }
+    .btn-success { color: #fff; background: var(--s); }
+    .btn-danger { color: #8d2f2f; background: #fff2f2; border-color: #edc9c9; }
+    .btn-small { min-height: 37px; padding: 7px 10px; font-size: .82rem; }
+    .btn-wide { width: 100%; }
+
+    .hero {
+      overflow: hidden;
+      padding: 0;
+      margin-bottom: 14px;
+    }
+    .hero-copy { padding: 15px; }
+    .hero-copy h2 { margin: 0 0 6px; font-size: 1.18rem; }
+    .hero-copy p { margin: 0; color: var(--muted); line-height: 1.48; }
+
+    .dashboard-grid {
+      display: grid;
+      gap: 11px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 14px;
+    }
+    .metric {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .metric strong { display: block; font-size: 1.35rem; }
+    .metric span { color: var(--muted); font-size: .78rem; font-weight: 750; }
+
+    .home-actions {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 15px;
+    }
+
+    .observation-list {
+      display: grid;
+      gap: 10px;
+    }
+    .saved-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgba(18,53,91,.045);
+    }
+    .saved-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .saved-card-main { flex: 1; min-width: 0; }
+    .saved-card h3 { margin: 0 0 4px; font-size: 1rem; line-height: 1.35; }
+    .saved-meta { color: var(--muted); font-size: .82rem; line-height: 1.45; }
+    .status-badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 900;
+    }
+    .status-draft { color: #804c00; background: #fff1cf; }
+    .status-final { color: #185b2e; background: #dff4e4; }
+    .mini-progress {
+      height: 8px;
+      overflow: hidden;
+      margin: 11px 0 7px;
+      border-radius: 999px;
+      background: #e8edf2;
+    }
+    .mini-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--s));
+    }
+    .saved-stats { color: var(--muted); font-size: .78rem; }
+    .saved-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .empty-state {
+      padding: 28px 15px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .empty-state strong { display: block; color: var(--text); margin-bottom: 4px; }
+
+    .view-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 13px;
+    }
+    .view-heading-copy { flex: 1; min-width: 0; }
+    .view-heading h2 { margin: 0; font-size: 1.17rem; }
+    .view-heading p { margin: 3px 0 0; color: var(--muted); font-size: .82rem; }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      padding: 7px;
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .tab-btn {
+      min-height: 42px;
+      padding: 8px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 850;
+    }
+    .tab-btn.active { color: #fff; background: var(--navy); }
+
+    .search-wrap { position: relative; margin-bottom: 12px; }
+    .search-wrap input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 13px 0 42px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,168,.13); }
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .activity-builder-list, .global-results { display: grid; gap: 10px; }
+    .activity-builder {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+    .activity-builder summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px;
+    }
+    .activity-builder summary::-webkit-details-marker { display: none; }
+    .activity-summary-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .activity-summary-main { flex: 1; min-width: 0; }
+    .activity-summary-name { display: block; font-weight: 850; line-height: 1.35; }
+    .activity-summary-count { display: block; margin-top: 4px; color: var(--muted); font-size: .78rem; }
+    .chevron { color: var(--muted); transition: transform .15s ease; }
+    details[open] .chevron { transform: rotate(90deg); }
+    .activity-builder-body { padding: 0 12px 12px; border-top: 1px solid var(--line); }
+    .activity-builder-tools {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 0 7px;
+    }
+
+    .question-choice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 4px;
+      border-top: 1px dashed #e3e9ee;
+    }
+    .question-choice:first-of-type { border-top: 0; }
+    .question-choice input {
+      width: 21px;
+      height: 21px;
+      margin: 1px 0 0;
+      accent-color: var(--navy);
+      flex: 0 0 auto;
+    }
+    .choice-main { min-width: 0; flex: 1; }
+    .choice-code {
+      display: inline-flex;
+      margin-bottom: 5px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--blue-soft);
+      font-size: .71rem;
+      font-weight: 900;
+    }
+    .choice-text { display: block; line-height: 1.42; font-size: .88rem; }
+    .choice-activity { display: block; margin-top: 5px; color: var(--muted); font-size: .74rem; }
+
+    .global-hint {
+      padding: 20px 14px;
+      border: 1px dashed #bfcbd5;
+      border-radius: 14px;
+      color: var(--muted);
+      background: #fbfcfd;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .builder-footer {
+      position: fixed;
+      z-index: 45;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 9px 13px calc(9px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(243,246,249,.95);
+      backdrop-filter: blur(12px);
+    }
+    .builder-footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .builder-summary { flex: 1; min-width: 0; }
+    .builder-summary strong { display: block; font-size: .95rem; }
+    .builder-summary span { color: var(--muted); font-size: .76rem; }
+
+    .obs-top-grid { display: grid; gap: 11px; margin-bottom: 12px; }
+    .obs-heading-row { display: flex; align-items: flex-start; gap: 9px; }
+    .obs-title-wrap { flex: 1; min-width: 0; }
+    .obs-title-wrap h2 { margin: 0; font-size: 1.13rem; line-height: 1.3; }
+    .obs-title-wrap p { margin: 4px 0 0; color: var(--muted); font-size: .78rem; }
+    .obs-select {
+      width: 100%;
+      min-height: 43px;
+      margin-top: 12px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 9px;
+      margin-top: 12px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+    }
+    .field input {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      outline: none;
+    }
+    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,168,.12); }
+    .field input:disabled { color: #45515d; background: #f1f4f6; }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+    .progress-head strong { font-size: 1rem; }
+    .progress-head span { color: var(--muted); font-size: .78rem; }
+    .progress-track {
+      height: 11px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6edf2;
+    }
+    .progress-track span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--s));
+      transition: width .18s ease;
+    }
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 11px;
+    }
+    .score-cell {
+      padding: 8px 3px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      text-align: center;
+      background: #fff;
+    }
+    .score-cell strong { display: block; font-size: 1.08rem; }
+    .score-cell span { color: var(--muted); font-size: .7rem; font-weight: 850; }
+
+    .shortcut-bar {
+      position: sticky;
+      top: 74px;
+      z-index: 35;
+      overflow-x: auto;
+      display: flex;
+      gap: 7px;
+      padding: 9px;
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.95);
+      box-shadow: 0 5px 18px rgba(18,53,91,.08);
+      backdrop-filter: blur(10px);
+    }
+    .shortcut {
+      flex: 0 0 auto;
+      min-height: 37px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .shortcut.active { color: #fff; border-color: var(--navy); background: var(--navy); }
+    .shortcut:disabled { opacity: .35; }
+
+    .activity-section {
+      margin-bottom: 17px;
+      scroll-margin-top: 135px;
+    }
+    .activity-section-header {
+      position: sticky;
+      top: 128px;
+      z-index: 25;
+      display: flex;
+      justify-content: space-between;
+      gap: 9px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 4px 12px rgba(18,53,91,.17);
+    }
+    .activity-section-header h3 { margin: 0; font-size: .91rem; line-height: 1.35; }
+    .activity-section-header span { flex: 0 0 auto; color: rgba(255,255,255,.78); font-size: .73rem; font-weight: 850; }
+    .question-list { display: grid; gap: 9px; padding-top: 9px; }
+
+    .question-card {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 11px rgba(18,53,91,.04);
+      scroll-margin-top: 185px;
+    }
+    .question-card.answered { border-left: 5px solid var(--s); }
+    .question-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    .code-badge {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--blue-soft);
+      font-size: .72rem;
+      font-weight: 950;
+    }
+    .question-number { color: var(--muted); font-size: .72rem; }
+    .question-text { margin: 0 0 11px; line-height: 1.47; font-size: .91rem; }
+
+    .rating-group {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .rating-label { position: relative; }
+    .rating-label input { position: absolute; opacity: 0; pointer-events: none; }
+    .rating-label span {
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      background: #f8fafb;
+      font-weight: 950;
+      transition: transform .1s ease, background .12s ease, color .12s ease;
+    }
+    .rating-label input:focus-visible + span { outline: 3px solid rgba(47,111,168,.25); outline-offset: 2px; }
+    .rating-label[data-rating="NA"] input:checked + span { color: #fff; border-color: var(--na); background: var(--na); }
+    .rating-label[data-rating="P"] input:checked + span { color: #fff; border-color: var(--p); background: var(--p); }
+    .rating-label[data-rating="S"] input:checked + span { color: #fff; border-color: var(--s); background: var(--s); }
+    .rating-label[data-rating="S+"] input:checked + span { color: var(--sp-text); border-color: var(--sp); background: var(--sp); }
+    .rating-label input:disabled + span { cursor: default; opacity: .78; }
+
+    details.note { margin-top: 9px; padding-top: 7px; border-top: 1px dashed var(--line); }
+    details.note summary { cursor: pointer; color: var(--blue); font-size: .8rem; font-weight: 800; }
+    details.note textarea {
+      width: 100%;
+      min-height: 78px;
+      margin-top: 8px;
+      padding: 9px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+    }
+    details.note textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,168,.11); }
+    details.note textarea:disabled { background: #f1f4f6; }
+
+    .obs-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .lock-message {
+      margin: 10px 0 0;
+      padding: 10px;
+      border-radius: 10px;
+      color: #185b2e;
+      background: #e2f4e6;
+      font-size: .82rem;
+      font-weight: 750;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      max-width: calc(100vw - 28px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: #162839;
+      box-shadow: 0 10px 28px rgba(0,0,0,.24);
+      text-align: center;
+      font-size: .83rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 18px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+
+    .competency-groups {
+      display: grid;
+      gap: 8px;
+      padding-top: 8px;
+    }
+    .competency-group {
+      overflow: hidden;
+      border: 1px solid #cbd8e2;
+      border-radius: 12px;
+      background: #f9fbfc;
+    }
+    .competency-group > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 11px 12px;
+      background: #eef5fa;
+    }
+    .competency-group > summary::-webkit-details-marker { display: none; }
+    .competency-summary {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .competency-code {
+      flex: 0 0 auto;
+      min-width: 52px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--navy);
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 950;
+    }
+    .competency-summary-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .competency-summary-main strong {
+      display: block;
+      font-size: .86rem;
+    }
+    .competency-summary-main span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .73rem;
+    }
+    .competency-body {
+      padding: 8px 10px 10px;
+      border-top: 1px solid #d9e4ec;
+      background: #fff;
+    }
+    .competency-tools {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 6px;
+    }
+    .question-choice-card {
+      padding: 10px 2px;
+      border-top: 1px dashed #dce5ec;
+    }
+    .question-choice-card:first-of-type { border-top: 0; }
+    .question-choice {
+      border-top: 0;
+      padding: 0;
+    }
+    .builder-rating {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin: 9px 0 0 31px;
+      padding: 9px;
+      border: 1px solid #d8e3eb;
+      border-radius: 11px;
+      background: #f7fafc;
+    }
+    .builder-rating-title {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 850;
+    }
+    .builder-rating .rating-label span {
+      min-height: 39px;
+      background: #fff;
+    }
+    .builder-rating .rating-label[data-rating="NA"] input:checked + span {
+      color: #fff;
+      border-color: var(--na);
+      background: var(--na);
+    }
+    .builder-rating .rating-label[data-rating="P"] input:checked + span {
+      color: #fff;
+      border-color: var(--p);
+      background: var(--p);
+    }
+    .builder-rating .rating-label[data-rating="S"] input:checked + span {
+      color: #fff;
+      border-color: var(--s);
+      background: var(--s);
+    }
+    .builder-rating .rating-label[data-rating="S+"] input:checked + span {
+      color: var(--sp-text);
+      border-color: var(--sp);
+      background: var(--sp);
+    }
+    .instant-rated {
+      margin-left: 6px;
+      color: var(--s);
+      font-size: .7rem;
+      font-weight: 900;
+    }
+
+
+    .direct-competency-list {
+      display: grid;
+      gap: 10px;
+    }
+    .competency-group {
+      overflow: hidden;
+      border: 1px solid #c8d7e2;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgba(18,53,91,.045);
+    }
+    .competency-group > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 13px;
+      background: #eef5fa;
+    }
+    .competency-group > summary::-webkit-details-marker { display: none; }
+    .competency-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .competency-code {
+      flex: 0 0 auto;
+      min-width: 57px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--navy);
+      text-align: center;
+      font-size: .79rem;
+      font-weight: 950;
+    }
+    .competency-summary-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .competency-summary-main strong {
+      display: block;
+      line-height: 1.3;
+      font-size: .9rem;
+    }
+    .competency-summary-main span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+    .competency-body {
+      padding: 10px 11px 12px;
+      border-top: 1px solid #d7e2ea;
+    }
+    .competency-tools {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 0 7px;
+    }
+    .custom-observation-form {
+      margin-bottom: 9px;
+      padding: 10px;
+      border: 1px solid #c7dbe8;
+      border-radius: 11px;
+      background: #edf7fc;
+    }
+    .custom-observation-form label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: .77rem;
+      font-weight: 900;
+    }
+    .custom-observation-form textarea {
+      width: 100%;
+      min-height: 70px;
+      resize: vertical;
+      padding: 9px 10px;
+      border: 1px solid #b7cad7;
+      border-radius: 9px;
+      background: #fff;
+      outline: none;
+    }
+    .custom-observation-form textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(47,111,168,.12);
+    }
+    .custom-observation-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 7px;
+    }
+    .custom-badge {
+      display: inline-flex;
+      margin-left: 6px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: #725000;
+      background: #fff0bd;
+      font-size: .65rem;
+      font-weight: 900;
+    }
+    .builder-error {
+      padding: 18px;
+      border: 1px solid #efc8c8;
+      border-radius: 13px;
+      color: #8d2f2f;
+      background: #fff3f3;
+      line-height: 1.45;
+    }
+    .shortcut {
+      max-width: 320px;
+      white-space: normal;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .code-badge {
+      max-width: 88%;
+      white-space: normal;
+      line-height: 1.25;
+    }
+
+
+    .activity-picker {
+      margin-bottom: 11px;
+      box-shadow: none;
+      background: #f8fbfd;
+    }
+    .activity-picker label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--navy);
+      font-size: .79rem;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+    }
+    .activity-picker select {
+      width: 100%;
+      min-height: 49px;
+      padding: 9px 38px 9px 11px;
+      border: 1px solid #b9ccd9;
+      border-radius: 11px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      font-weight: 800;
+    }
+    .activity-picker select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(47,111,168,.12);
+    }
+    .activity-picker p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1.4;
+    }
+    .activity-context {
+      margin: 0 0 9px;
+      padding: 10px 12px;
+      border-radius: 11px;
+      color: var(--navy);
+      background: var(--blue-soft);
+      font-size: .82rem;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+    .no-questions {
+      padding: 12px 4px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-style: italic;
+    }
+    .selection-after {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .73rem;
+      font-weight: 750;
+    }
+
+
+    .activity-instructions {
+      margin-bottom: 11px;
+      box-shadow: none;
+      background: #f6fafc;
+    }
+    .activity-instructions strong {
+      display: block;
+      color: var(--navy);
+      font-size: .91rem;
+    }
+    .activity-instructions span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.42;
+    }
+    .activity-builder-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .driving-activity {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(18,53,91,.05);
+    }
+    .driving-activity > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px;
+      background: #fff;
+    }
+    .driving-activity > summary::-webkit-details-marker { display: none; }
+    .driving-activity[open] > summary {
+      border-bottom: 1px solid var(--line);
+      background: #f7fbfe;
+    }
+    .driving-activity-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .driving-activity-icon {
+      width: 39px;
+      height: 39px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: #fff;
+      background: var(--navy);
+      font-weight: 950;
+    }
+    .driving-activity-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .driving-activity-main strong {
+      display: block;
+      line-height: 1.34;
+      font-size: .92rem;
+    }
+    .driving-activity-main span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+    .driving-activity-body {
+      padding: 11px;
+      background: #fbfcfd;
+    }
+    .activity-selection-tools {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 9px;
+    }
+    .nested-competency-list {
+      display: grid;
+      gap: 8px;
+    }
+    .competency-group {
+      box-shadow: none;
+    }
+    .competency-group > summary {
+      padding: 11px;
+    }
+    .activity-empty-competency {
+      padding: 10px;
+      border-radius: 9px;
+      color: var(--muted);
+      background: #f3f6f8;
+      font-size: .78rem;
+    }
+    @media (min-width: 820px) {
+      .activity-builder-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+    }
+
+
+    .summary-rating {
+      display: inline-flex;
+      min-width: 72px;
+      min-height: 39px;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-weight: 950;
+    }
+    .summary-rating.rating-na { color: #fff; background: var(--na); }
+    .summary-rating.rating-p { color: #fff; background: var(--p); }
+    .summary-rating.rating-s { color: #fff; background: var(--s); }
+    .summary-rating.rating-sp { color: var(--sp-text); background: var(--sp); }
+    .summary-rating.rating-empty {
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background: #f3f6f8;
+    }
+    .summary-answer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .summary-answer-label {
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 850;
+    }
+    .summary-note {
+      margin-top: 10px;
+      padding: 9px 10px;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      color: #35424e;
+      background: #f1f7fb;
+      font-size: .84rem;
+      line-height: 1.45;
+    }
+    .summary-note strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--navy);
+    }
+    .obs-heading-row { flex-wrap: wrap; }
+
+
+    .competency-ct1 { background: #b00072 !important; color: #fff !important; border-color: #b00072 !important; }
+    .competency-ct2 { background: #d90048 !important; color: #fff !important; border-color: #d90048 !important; }
+    .competency-ct3 { background: #e85d0b !important; color: #fff !important; border-color: #e85d0b !important; }
+    .competency-ct4 { background: #762481 !important; color: #fff !important; border-color: #762481 !important; }
+
+    .competency-cnt1 { background: #118bcb !important; color: #fff !important; border-color: #118bcb !important; }
+    .competency-cnt2 { background: #079bab !important; color: #fff !important; border-color: #079bab !important; }
+    .competency-cnt3 { background: #ffb20f !important; color: #fff !important; border-color: #ffb20f !important; }
+    .competency-cnt4 { background: #7fbd00 !important; color: #fff !important; border-color: #7fbd00 !important; }
+    .competency-cnt5 { background: #00545b !important; color: #fff !important; border-color: #00545b !important; }
+
+    .builder-comment {
+      grid-column: 1 / -1;
+      margin-top: 3px;
+    }
+    .builder-comment label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 850;
+    }
+    .builder-comment textarea {
+      width: 100%;
+      min-height: 68px;
+      resize: vertical;
+      padding: 9px 10px;
+      border: 1px solid #c6d4df;
+      border-radius: 9px;
+      background: #fff;
+      outline: none;
+    }
+    .builder-comment textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(47,111,168,.12);
+    }
+    .add-observation-separator {
+      margin: 11px 0 9px;
+      border: 0;
+      border-top: 1px dashed #cbd7df;
+    }
+
+
+    .synthesis-panel {
+      margin-bottom: 14px;
+    }
+    .synthesis-panel h2 {
+      margin: 0 0 5px;
+      color: var(--navy);
+      font-size: 1.08rem;
+    }
+    .synthesis-panel > p {
+      margin: 0 0 11px;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.4;
+    }
+    .matrix-scroll,
+    .development-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .competency-matrix,
+    .development-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      font-size: .78rem;
+    }
+    .competency-matrix th,
+    .competency-matrix td,
+    .development-table th,
+    .development-table td {
+      padding: 7px;
+      border: 1px solid #cbd5dd;
+      vertical-align: middle;
+    }
+    .competency-matrix th,
+    .development-table th {
+      color: var(--navy);
+      background: #eef3f7;
+      font-weight: 900;
+    }
+    .competency-matrix th:first-child,
+    .competency-matrix td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      min-width: 265px;
+      background: #fff;
+      text-align: left;
+    }
+    .competency-matrix thead th:first-child {
+      z-index: 3;
+      background: #eef3f7;
+    }
+    .competency-matrix th:not(:first-child),
+    .competency-matrix td:not(:first-child) {
+      min-width: 82px;
+      text-align: center;
+    }
+    .matrix-code {
+      display: inline-flex;
+      min-width: 58px;
+      min-height: 30px;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 7px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 950;
+    }
+    .matrix-rating {
+      font-weight: 950;
+      text-align: center;
+    }
+    .matrix-rating.rating-na { color: #fff; background: var(--na); }
+    .matrix-rating.rating-p { color: #fff; background: var(--p); }
+    .matrix-rating.rating-s { color: #fff; background: var(--s); }
+    .matrix-rating.rating-sp { color: var(--sp-text); background: var(--sp); }
+    .matrix-rating.rating-empty { color: #a0aab3; background: #f7f9fa; }
+
+    .development-table th:nth-child(1) { min-width: 190px; }
+    .development-table th:nth-child(2) { min-width: 210px; }
+    .development-table th:nth-child(3),
+    .development-table th:nth-child(4) { min-width: 85px; text-align: center; }
+    .development-table th:nth-child(5) { min-width: 260px; }
+    .development-table th:nth-child(6) { min-width: 230px; }
+    .development-table th:nth-child(7) { min-width: 145px; }
+    .development-table th:nth-child(8) { min-width: 72px; text-align: center; }
+    .development-table td:nth-child(3),
+    .development-table td:nth-child(4),
+    .development-table td:nth-child(8) { text-align: center; }
+    .development-table textarea,
+    .development-table input[type="date"] {
+      width: 100%;
+      border: 1px solid #c5d1da;
+      border-radius: 8px;
+      padding: 7px 8px;
+      background: #fff;
+      outline: none;
+    }
+    .development-table textarea {
+      min-height: 66px;
+      resize: vertical;
+    }
+    .development-table textarea:focus,
+    .development-table input[type="date"]:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(47,111,168,.12);
+    }
+    .development-table input[type="checkbox"] {
+      width: 21px;
+      height: 21px;
+      accent-color: var(--navy);
+    }
+    .development-empty {
+      padding: 18px;
+      border: 1px dashed #bfccd5;
+      border-radius: 11px;
+      color: var(--muted);
+      background: #fafcfd;
+      text-align: center;
+      font-size: .84rem;
+    }
+    .auto-rule {
+      display: inline-flex;
+      margin-top: 7px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #7c3600;
+      background: #fff0d8;
+      font-size: .72rem;
+      font-weight: 850;
+    }
+
+
+    .builder-questioning {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 1px solid #d4dee6;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--navy);
+      font-size: .82rem;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .builder-questioning input {
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
+      accent-color: var(--navy);
+    }
+    .questioning-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 9px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: var(--navy);
+      background: var(--blue-soft);
+      border: 1px solid #c9dce9;
+      font-size: .74rem;
+      font-weight: 900;
+    }
+
+    @media (min-width: 680px) {
+      main { padding: 22px 18px 112px; }
+      .dashboard-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .home-actions { grid-template-columns: 1fr 1fr; }
+      .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .obs-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 940px) {
+      .obs-top-grid { grid-template-columns: 1.55fr 1fr; align-items: start; }
+      .meta-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .activity-builder-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+      .global-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media print {
+      .app-header, .shortcut-bar, .obs-actions, .builder-footer, .btn { display: none !important; }
+      body { background: #fff; }
+      main { max-width: none; padding: 0; }
+      .panel, .question-card { box-shadow: none; }
+      .activity-section-header { position: static; color: #111; background: #e8eef3; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">OA</div>
+      <div class="header-copy">
+        <h1>Observations en accompagnement</h1>
+        <p>Choix ciblé des compétences, cotation et synthèse multi-observations</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="homeView">
+      <div class="panel hero">
+        <div class="hero-copy">
+          <h2>Gestion des observations</h2>
+          <p>Cotez directement les observations choisies, consultez leur fiche résumé et exportez-la en PDF.</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="metric"><strong id="metricTotal">0</strong><span>observations</span></div>
+        <div class="metric"><strong id="metricDraft">0</strong><span>fiches incomplètes</span></div>
+        <div class="metric"><strong id="metricFinal">0</strong><span>fiches complètes</span></div>
+        <div class="metric"><strong id="metricRatings">0</strong><span>cotations saisies</span></div>
+      </div>
+
+      <div class="home-actions">
+        <button id="newObservationBtn" class="btn btn-primary btn-wide" type="button">＋ Nouvelle observation</button>
+        <button id="summaryPdfBtn" class="btn btn-success btn-wide" type="button">PDF de toutes les fiches</button>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Observations enregistrées</h2>
+        <p class="section-copy">Consultez une fiche résumé ou exportez-la directement en PDF.</p>
+        <div id="observationList" class="observation-list" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <section id="builderView" class="hidden">
+      <div class="view-heading">
+        <button id="builderBackBtn" class="btn btn-ghost btn-small" type="button">← Retour</button>
+        <div class="view-heading-copy">
+          <h2 id="builderTitle">Nouvelle observation</h2>
+          <p>Ouvrez une activité de conduite, cochez une observation dans un menu CT ou CNT, puis cotez-la immédiatement avec NA, P, S ou S+.</p>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" type="button" data-builder-mode="activity">Par activité</button>
+        <button class="tab-btn" type="button" data-builder-mode="global">Recherche globale</button>
+      </div>
+
+      <div id="activityBuilderPane">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input id="activityBuilderSearch" type="search" placeholder="Rechercher une activité de conduite…" autocomplete="off">
+        </div>
+
+        <div class="panel activity-instructions">
+          <strong>1. Ouvrez une activité de conduite</strong>
+          <span>Exemple : Préparation de la mission. Dans CT2 – Gestion des IHM, choisissez d’abord une observation disponible ; le formulaire d’ajout se trouve ensuite en bas du menu.</span>
+        </div>
+
+        <div id="activityBuilderList" class="activity-builder-list"></div>
+      </div>
+
+      <div id="globalBuilderPane" class="hidden">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input id="globalQuestionSearch" type="search" placeholder="Ex. vitesse, freinage, sécurité, CT 3…" autocomplete="off">
+        </div>
+        <div id="globalSearchContent"></div>
+      </div>
+    </section>
+
+    <section id="observationView" class="hidden">
+      <div class="obs-top-grid">
+        <div class="panel">
+          <div class="obs-heading-row">
+            <button id="observationBackBtn" class="btn btn-ghost btn-small" type="button">←</button>
+            <div class="obs-title-wrap">
+              <h2 id="activeObservationTitle">Fiche résumé</h2>
+              <p id="activeObservationStatus">Fiche enregistrée automatiquement</p>
+            </div>
+            <button id="currentPdfBtn" class="btn btn-success btn-small" type="button">Exporter PDF</button>
+          </div>
+
+          <select id="observationSwitcher" class="obs-select" aria-label="Changer d’observation"></select>
+
+          <div class="meta-grid">
+            <div class="field">
+              <label for="obsDate">Date</label>
+              <input id="obsDate" type="date">
+            </div>
+            <div class="field">
+              <label for="observerName">Observateur</label>
+              <input id="observerName" type="text" placeholder="Nom">
+            </div>
+            <div class="field">
+              <label for="agentName">Agent observé</label>
+              <input id="agentName" type="text" placeholder="Nom">
+            </div>
+            <div class="field">
+              <label for="mission">Mission / train</label>
+              <input id="mission" type="text" placeholder="Référence">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="progress-head">
+            <strong id="progressLabel">0 % complété</strong>
+            <span id="progressCount">0 / 0 réponses</span>
+          </div>
+          <div class="progress-track"><span id="progressBar"></span></div>
+          <div class="score-grid">
+            <div class="score-cell"><strong id="countNA">0</strong><span>NA</span></div>
+            <div class="score-cell"><strong id="countP">0</strong><span>P</span></div>
+            <div class="score-cell"><strong id="countS">0</strong><span>S</span></div>
+            <div class="score-cell"><strong id="countSP">0</strong><span>S+</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="competencySynthesisContainer"></div>
+      <div id="developmentContainer"></div>
+      <div id="questionContainer"></div>
+
+    </section>
+  </main>
+
+  <div id="builderFooter" class="builder-footer hidden">
+    <div class="builder-footer-inner">
+      <div class="builder-summary">
+        <strong id="builderSelectedCount">0 question sélectionnée</strong>
+        <span id="builderCodeSummary">Aucune compétence sélectionnée</span>
+      </div>
+      <button id="createObservationBtn" class="btn btn-primary" type="button" disabled>Voir la fiche résumé</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const ACTIVITIES = [{"id": "activite-1", "name": "Préparation de le JS et de la circ. / opérations fin de JS", "questions": [{"id": "a1-q1", "code": "CT 2", "text": "Différents outils chargés en état de fonctionnement,"}, {"id": "a1-q2", "code": "CT 3", "text": "Consulte les avis signalisation, avis Défit, infos sécurité FT, etc…"}, {"id": "a1-q3", "code": "CT 3", "text": "Les particularités sont reprises, directions, transitions de vitesse, LTV,"}, {"id": "a1-q4", "code": "CT 3", "text": "Les particularités relatives à l’AuM, (paragraphes 5.1 et 2) sont prises en compte,"}, {"id": "a1-q5", "code": "CT 3", "text": "Les différents outils utilisés sont à jour et chargés le cas échéant,"}, {"id": "a1-q6", "code": "CT 3", "text": "Lors de la fin de mission, l’EM est complété dans ES LOCO le cas échéant,"}, {"id": "a1-q7", "code": "CT 3", "text": "Les différents documents de bords sont complétés le cas échéant,"}, {"id": "a1-q8", "code": "CT 3", "text": "Le BS est complété le cas échéant,"}, {"id": "a1-q9", "code": "CT 3", "text": "Respecte bien évidemment l’horaire,"}, {"id": "a1-q10", "code": "CT 3", "text": "Les émargements sont à jour"}, {"id": "a1-q11", "code": "CT 4", "text": "L’ADC prend en compte les particularités liées au cheminement lors de sa mission,"}, {"id": "a1-q12", "code": "CT 4", "text": "L’ADC est en état pour réaliser sa mission (psychotrope, fatigue, maladie, soucis persos, etc…)"}, {"id": "a1-q13", "code": "CT 4", "text": "Equipement en EPI conforme à la mission à effectuer,"}, {"id": "a1-q14", "code": "CT 4", "text": "Les documents concernant la SST sont connus (document unique, REX,…),"}, {"id": "a1-q15", "code": "CT 4", "text": "L’ADC est équipé en vêtements conformes à sa mission, et possède si nécessaire une bouteille d’eau,…."}, {"id": "a1-q16", "code": "CT 4", "text": "Prend mesure de protection lors de la prépa EM (matérialise sa présence sur l’EM, etc…)"}, {"id": "a1-q17", "code": "CNT 1", "text": "Identifie les menaces personnelles et compose avec (fatigue, préoccupation, état physique, etc…),"}, {"id": "a1-q18", "code": "CNT 1", "text": "Identifie les divers autres menaces => voir TT00150,"}, {"id": "a1-q19", "code": "CNT 1", "text": "Prend en compte les menaces SST,"}, {"id": "a1-q20", "code": "CNT 1", "text": "Prise en compte de la météo lors de sa préparation de mission (exemple: givre, ADC consulte MMTO/RCL et note de service,…)"}, {"id": "a1-q21", "code": "CNT 1", "text": "Identifie les menaces personnelles , contextuelles et génériques de la JS,"}, {"id": "a1-q22", "code": "CNT 1", "text": "Connaît les REX de l’UP et est capable de les citer."}, {"id": "a1-q23", "code": "CNT 2", "text": "L’ADC identifie et comprend le rôle de ses interlocuteurs,"}, {"id": "a1-q24", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude avec les autres est constructive en terme de sécurité et de qualité,"}, {"id": "a1-q25", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale quelle que soient les personnes impliquées (grade, fonction, etc…),"}, {"id": "a1-q26", "code": "CNT 2", "text": "Positionnement pro-actif lors des diverses tâches de la mission et lors du briefing,"}, {"id": "a1-q27", "code": "CNT 3", "text": "La communication avec le bureau de commande est conforme, (PS, FS,…), l’ADC comprend ces enjeux,"}, {"id": "a1-q28", "code": "CNT 3", "text": "La communication réglementaire est étudiée (affichage sécurité), les enjeux en sont maîtrisés,"}, {"id": "a1-q29", "code": "CNT 3", "text": "L’ADC est capable de citer son rôle dans la communication avec ses interlocuteurs lors de sa PS et FS,"}, {"id": "a1-q30", "code": "CNT 3", "text": "ADC très pro-actif, il recherche les infos utiles en amont et utilise des supports efficaces (ex: sortie EM d’un dépôt, ADC appelle à la PS le Geops);"}, {"id": "a1-q31", "code": "CNT 3", "text": "L’ADC recherche comment échanger l’ensemble des interlocuteurs qui contribuent à la réalisation de sa mission"}, {"id": "a1-q32", "code": "CNT 3", "text": "L’ADC est précis et exhaustif dans ses communications (rédaction BS, renseignement carnet de bord, saisie ES loco, etc…)"}, {"id": "a1-q33", "code": "CNT 4", "text": "L’ADC utilise un support adapté qu’il s’approprie,"}, {"id": "a1-q34", "code": "CNT 4", "text": "Il prépare ses outils notamment Sirius avec le positionnement des AS et autres,…"}, {"id": "a1-q35", "code": "CNT 4", "text": "L’ADC utilise un code couleur précis,"}, {"id": "a1-q36", "code": "CNT 4", "text": "Sait se repérer lors du déroulé de sa mission, il est capable d’expliquer la nécessité d’anticiper ses futures actions,"}, {"id": "a1-q37", "code": "CNT 4", "text": "Vitesses et transitions connues avec certitude, connait les distance de décélération,"}, {"id": "a1-q38", "code": "CNT 4", "text": "Hiérarchise ses actions lors de sa préparation de mission,"}, {"id": "a1-q39", "code": "CNT 4", "text": "Adopte la démarche du projet d’action lors de sa préparation de mission, notamment concernant les directions, dessertes voyageurs,"}, {"id": "a1-q40", "code": "CNT 4", "text": "Exemple: prise de note lors du briefing, intègre l’impact sur lui de la présence du CTT, etc…"}, {"id": "a1-q41", "code": "CNT 5", "text": "Le conducteur liste ses interrogations et y répond,"}, {"id": "a1-q42", "code": "CNT 5", "text": "Le conducteur connaît les menaces personnelles qui impactent sa performance et possède une méthode d’auto-évaluation et accepte par exemple de renoncer à sa mission."}, {"id": "a1-q43", "code": "CNT 5", "text": "Vitesses et transitions connues avec certitude, connait les distance de décélération,"}, {"id": "a1-q44", "code": "CNT 5", "text": "Hiérarchise ses actions lors de sa préparation de mission,"}, {"id": "a1-q45", "code": "CNT 5", "text": "Adopte la démarche du projet d’action lors de sa préparation de mission, notamment concernant les directions, dessertes voyageurs,"}, {"id": "a1-q46", "code": "CNT 5", "text": "ADC pro-actif lors des briefings et n’hésite pas à questionner."}]}, {"id": "activite-2", "name": "Gestion des conditions de mise en mouvement", "questions": [{"id": "a2-q1", "code": "CT 1", "text": "L’ADC exploite les indices sensoriels (5 sens),"}, {"id": "a2-q2", "code": "CT 1", "text": "L’ADC prend en compte précisément les informations des différents IHM. Il est capable de les interpréter et de les utiliser."}, {"id": "a2-q3", "code": "CT 1", "text": "L’ADC maîtrise le démarrage en rampe"}, {"id": "a2-q4", "code": "CT 1", "text": "L’ADC met en œuvre efficacement l’essai de roulage"}, {"id": "a2-q5", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en motivant ses actions,"}, {"id": "a2-q6", "code": "CT 2", "text": "L’immobilisation de sa circulation est conforma à la réglementation en vigueur,"}, {"id": "a2-q7", "code": "CT 2", "text": "Les différents IHM (RST, SIRIUS, GSM, SIAC, EAS, écrans divers en cabine, interphonie d’essai, radios de secours, etc...) sont connus et utilisés en adéquation avec la situation."}, {"id": "a2-q8", "code": "CT 3", "text": "Mets en œuvre les 4 phases (PPE sol/bord, ST, horaire, AuM) du processus de départ des trains et est capable de les citer,"}, {"id": "a2-q9", "code": "CT 3", "text": "Connait les procédures d’expédition des trains, ainsi que leurs motivations,"}, {"id": "a2-q10", "code": "CT 3", "text": "Connait et maîtrise le sens des informations portées sur les documents horaires,"}, {"id": "a2-q11", "code": "CT 3", "text": "Connait et maîtrise le sens des informations portées sur les Lilis."}, {"id": "a2-q12", "code": "CT 4", "text": "La circulation est prête à se mettre en mouvement avec l’éclairage avant et arrière,"}, {"id": "a2-q13", "code": "CT 4", "text": "Check-up avec personnel à bord et définition d’un modus-opérandi adapté (sifflet, échange interphonie, annonce sonore, message SIVE, etc…)"}, {"id": "a2-q14", "code": "CNT 1", "text": "Construction d’un schéma mental de la situation de mise en mouvement. Prendre en compte les menaces et les éventuelles erreurs,"}, {"id": "a2-q15", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs, influence liée par la présence d’un deuxième agent par exemple,"}, {"id": "a2-q16", "code": "CNT 1", "text": "Prend en compte les éléments météo le cas échéant,"}, {"id": "a2-q17", "code": "CNT 1", "text": "Prise en compte des particularités locales (ex: DAMM)."}, {"id": "a2-q18", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs,"}, {"id": "a2-q19", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise la communication,"}, {"id": "a2-q20", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale, malgré les divers pressions qu’il peut subir"}, {"id": "a2-q21", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a2-q22", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a2-q23", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback)"}, {"id": "a2-q24", "code": "CNT 3", "text": "L’ADC comprend ce qui lui est transmis (reformulation),"}, {"id": "a2-q25", "code": "CNT 4", "text": "L’ADC se remémore ou collationne ce qu’il lui faut (exploitation de la mémoire à court terme et rafraîchissement des informations importantes)"}, {"id": "a2-q26", "code": "CNT 4", "text": "Met en œuvre un projet d’action efficace,"}, {"id": "a2-q27", "code": "CNT 4", "text": "L’ADC est capable de traiter une information importante imbriquée dans d’autres tâches (ex: biais liés au partage d’attention pris en compte)"}, {"id": "a2-q28", "code": "CNT 5", "text": "Le conducteur connaît les menaces des situations qu’il pourrait rencontrer lors de sa mise en mouvement Il a une méthode pour anticiper les situations de doute,"}, {"id": "a2-q29", "code": "CNT 5", "text": "Il maitrise dans cette situation le différentes options qui s’offrent à lui (signal de groupe, respect signalisation,..),"}, {"id": "a2-q30", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie pour lever le doute,"}, {"id": "a2-q31", "code": "CNT 5", "text": "Il est capable de ré-évaluer une décision, de s’adapter aux circonstances"}]}, {"id": "activite-3", "name": "Gestion de la vitesse", "questions": [{"id": "a3-q1", "code": "CT 1", "text": "L’ADC utilise son EM de façon rationnelle,"}, {"id": "a3-q2", "code": "CT 1", "text": "L’ADC effectue ses reprises de vitesses ou ralentissements en respectant le MC de l’EM,"}, {"id": "a3-q3", "code": "CT 1", "text": "Il prend en compte la notion d’économie d'énergie, sa conduite et anticipée,"}, {"id": "a3-q4", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en étant attentif à l’IV, sa fréquence d’observation est régulière,"}, {"id": "a3-q5", "code": "CT 2", "text": "Les transitions de vitesse sur Sirius sont étudiées en amont, et repérées le cas échéant,"}, {"id": "a3-q6", "code": "CT 2", "text": "Les différents IHM (RST, SIRIUS, GSM, SIAC,..) sont connus et utilisés en adéquation (réglée, chargée,..) avec la situation."}, {"id": "a3-q7", "code": "CT 3", "text": "L’ADC respecte scrupuleusement les transitions de vitesses qu’il rencontre,"}, {"id": "a3-q8", "code": "CT 3", "text": "L’ADC anticipe les transitions de vitesse qu’il sera amené à rencontrer,"}, {"id": "a3-q9", "code": "CT 3", "text": "L’ADC décode sans erreur les TIV qu’il doit respecter (type B,C,..),"}, {"id": "a3-q10", "code": "CT 3", "text": "L’ADC connait et utilise sans erreur les différents documents utiles,"}, {"id": "a3-q11", "code": "CT 3", "text": "L’ADC connait les vitesses des voies qu’il pourrait parcourir (IPCS,..)."}, {"id": "a3-q12", "code": "CT 4", "text": "L’ADC connait la topographie des lignes qu’il va parcourir, ainsi que les particularités de sites sur lesquels il circule"}, {"id": "a3-q13", "code": "CNT 1", "text": "Prendre en compte les menaces notamment liées aux transitions de vitesses (ex: situations de signalisation imbriquées),"}, {"id": "a3-q14", "code": "CNT 1", "text": "Identifie les risques liés au non respect de la vitesse,"}, {"id": "a3-q15", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, AICR,…),"}, {"id": "a3-q16", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a3-q17", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a3-q18", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a3-q19", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs, il identifie qui possède le leadership,"}, {"id": "a3-q20", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise la communication (ex: garde son calme et reste objectif),"}, {"id": "a3-q21", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale, il prend le leadership a bon escient."}, {"id": "a3-q22", "code": "CNT 3", "text": "L’ADC communique au moment opportun (ex: panne sol KVB),"}, {"id": "a3-q23", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a3-q24", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (notion de feedback),"}, {"id": "a3-q25", "code": "CNT 3", "text": "L’ADC comprend avec certitude ce qui lui est transmis (collationnement, épellation chiffres et lettres, reformulation)."}, {"id": "a3-q26", "code": "CNT 4", "text": "L’ADC se remémore ou collationne ce qu’il lui faut,"}, {"id": "a3-q27", "code": "CNT 4", "text": "L’ADC est capable de traiter une information présentée imbriquée dans d’autres tâches,"}, {"id": "a3-q28", "code": "CNT 4", "text": "L’ADC sait rafraîchir dans sa mémoire de traitement les informations essentielles,"}, {"id": "a3-q29", "code": "CNT 4", "text": "L’ADC organise et planifie ses actions, il prend en compte et se protège des biais d’habitude."}, {"id": "a3-q30", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute. Il roule à la plus basse des vitesses de la plateforme le cas échéant, il poursuit sa vitesse si LTV et doute sur rencontre du tableau blanc de reprise,"}, {"id": "a3-q31", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute, et dans ce cas de couper la traction et de réduire sa vitesse, ou de l’exprimer clairement dans les situations de co-activité,"}, {"id": "a3-q32", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}, {"id": "a3-q33", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie pour lever le doute,"}, {"id": "a3-q34", "code": "CNT 5", "text": "Vitesses et transitions connues avec certitude, connait les distance de décélération."}]}, {"id": "activite-4", "name": "Gestion des arrêts normaux", "questions": [{"id": "a4-q1", "code": "CT 1", "text": "L’ADC utilise son EM en prenant en compte le contexte et les divers effets d’inertie,"}, {"id": "a4-q2", "code": "CT 1", "text": "L’ADC maîtrise la gestion des portes,"}, {"id": "a4-q3", "code": "CT 1", "text": "L’ADC maîtrise l’information voyageurs dans les diverses situations d’arrêt."}, {"id": "a4-q4", "code": "CT 2", "text": "Surveille et maîtrise le fonctionnement de son matériel,"}, {"id": "a4-q5", "code": "CT 2", "text": "Exploite les différents indices au pupitre et en cabine,"}, {"id": "a4-q6", "code": "CT 2", "text": "Maîtrise l’utilisation de Sirius (rappel d’arrêt, etc…)."}, {"id": "a4-q7", "code": "CT 3", "text": "L’ADC est capable d’identifier les différents arrêts,"}, {"id": "a4-q8", "code": "CT 3", "text": "L’ADC détermine sans erreur les arrêts qu’il doit respecter,"}, {"id": "a4-q9", "code": "CT 3", "text": "L’ADC maîtrise les points d’arrêts inhérents à sa circulation,"}, {"id": "a4-q10", "code": "CT 4", "text": "ADC prend en compte la sécurité du personnel pendant la réalisation des arrêts (blocage/déblocage porte, VHQ, passage planchéé, pictos TVP, etc…)"}, {"id": "a4-q11", "code": "CNT 1", "text": "Prendre en compte les menaces liées aux respect des arrêts (compo du train, arrêts supplémentaires, immobilisation, etc…),"}, {"id": "a4-q12", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, AC, ASCT, Escale…),"}, {"id": "a4-q13", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a4-q14", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment l’adhérence et la visibilité le cas échéant,"}, {"id": "a4-q15", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a4-q16", "code": "CNT 2", "text": "L’ADC identifie ses interlocuteurs et comprend leur rôle,"}, {"id": "a4-q17", "code": "CNT 2", "text": "L’ADC s’inscrit dans un collectif, il sait faire partie d’un système, son attitude favorise les échanges."}, {"id": "a4-q18", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a4-q19", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur (ASCT, régulateur, clients)."}, {"id": "a4-q20", "code": "CNT 3", "text": "L’ADC possède une méthode de communication robuste."}, {"id": "a4-q21", "code": "CNT 4", "text": "L’ADC se remémore ou collationne le prochain arrêt,"}, {"id": "a4-q22", "code": "CNT 4", "text": "L’ADC est capable de gérer un arrêt imbriqué dans d’autres tâches,"}, {"id": "a4-q23", "code": "CNT 4", "text": "L’ADC possède des repères et exploite la performance de freinage de son matériel."}, {"id": "a4-q24", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute (ex: travail par défaut « je m’arrête tout le temps sauf quand je ne m’arrête pas », etc…),"}, {"id": "a4-q25", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute,"}, {"id": "a4-q26", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}, {"id": "a4-q27", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie pour lever le doute,"}]}, {"id": "activite-5", "name": "Surveillance de la voie, des abords et des itinéraires", "questions": [{"id": "a5-q1", "code": "CT 1", "text": "…"}, {"id": "a5-q2", "code": "CT 2", "text": "L’ADC observe la voie en contrôle que les indications cabine soient en corrélation avec les itinéraires à emprunter"}, {"id": "a5-q3", "code": "CT 3", "text": "L’ADC observe régulièrement la voie et ses abords,"}, {"id": "a5-q4", "code": "CT 3", "text": "L’ADC anticipe les itinéraires,"}, {"id": "a5-q5", "code": "CT 3", "text": "L’ADC se situe et se repère sur la voie,"}, {"id": "a5-q6", "code": "CT 3", "text": "L’ADC surveille régulièrement sa circulation et connaît les règles afférentes."}, {"id": "a5-q7", "code": "CT 4", "text": "L’ADC adapte son comportement aux situations rencontrées (ex: chantier de travaux, adc place la main sur sifflet),"}, {"id": "a5-q8", "code": "CT 4", "text": "L’ADC utilise le sifflet conformément à la norme et agit franchement sur le manipulateur."}, {"id": "a5-q9", "code": "CNT 1", "text": "Prendre en compte les menaces notamment liées à la présence de personnes aux abords de la voie,"}, {"id": "a5-q10", "code": "CNT 1", "text": "Prise en compte du risque d’erreur possible à l’approche des zones de changement de direction,"}, {"id": "a5-q11", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de ces thématiques,"}, {"id": "a5-q12", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a5-q13", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a5-q14", "code": "CNT 2", "text": "…"}, {"id": "a5-q15", "code": "CNT 3", "text": "…"}, {"id": "a5-q16", "code": "CNT 4", "text": "L’ADC  possède une méthode et il est capable de l’expliquer"}, {"id": "a5-q17", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute. Il adapte sa vitesse aux circonstances (ex: soleil rasant, etc…),"}, {"id": "a5-q18", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute, et agit en conséquence (mise en œuvre d’une mesure conservatoire type arrêt)."}]}, {"id": "activite-6", "name": "Gestion d’un signal d’annonce et/ou d’arrêt", "questions": [{"id": "a6-q1", "code": "CT 1", "text": "L’ADC anticipe dès que la situation le permet,"}, {"id": "a6-q2", "code": "CT 1", "text": "L’ADC effectue les ralentissements en respectant  les prescriptions du RCL et du MC de l’EM,"}, {"id": "a6-q3", "code": "CT 1", "text": "L’ADC immobilise correctement son convoi lors des arrêts par les signaux."}, {"id": "a6-q4", "code": "CT 2", "text": "L’adc agit et contrôle l’effet de ses actions,"}, {"id": "a6-q5", "code": "CT 3", "text": "L’ADC agit conformément à la norme lors de la rencontre de la signalisation d’annonce,"}, {"id": "a6-q6", "code": "CT 3", "text": "L’ADC détermine sans erreur les conditions de franchissement des signaux d’arrêt,"}, {"id": "a6-q7", "code": "CT 3", "text": "L’ADC décode sans erreur les TIV qu’il doit respecter (type B,C,..),"}, {"id": "a6-q8", "code": "CT 4", "text": "L’ADC utilise les pistes et itinéraires pour se rendre à la reconnaissance,"}, {"id": "a6-q9", "code": "CT 4", "text": "L’ADC prend en compte l’environnement et adapte son comportement en conséquence (ex: utilisation d’un téléphone de voie l’été, adc intègre le risque de présence d’insectes, etc…)."}, {"id": "a6-q10", "code": "CNT 1", "text": "Prise en compte des menaces liées au respect de la signalisation d’annonce (ex: implantation, adhérence, visibilité, situations imbriquées, biais de comportement, etc…),"}, {"id": "a6-q11", "code": "CNT 1", "text": "Prise en compte des menaces liées au respect de la signalisation d’arrêt (ex: implantation, adhérence, visibilité, situations imbriquées, biais de comportement, etc…),"}, {"id": "a6-q12", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de ces thématiques."}, {"id": "a6-q13", "code": "CNT 2", "text": "L’ADC identifie ses interlocuteurs et comprend leurs rôles,"}, {"id": "a6-q14", "code": "CNT 2", "text": "L’ADC  s’intègre au système, son attitude favorise les échanges,"}, {"id": "a6-q15", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale (ex: instaure le silence en cabine si la situation le demande, exige un formulaire de franchissement si nécessaire, etc…)."}, {"id": "a6-q16", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a6-q17", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a6-q18", "code": "CNT 3", "text": "L’ADC utilise l’outil de communication adapté,"}, {"id": "a6-q19", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris,"}, {"id": "a6-q20", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis,"}, {"id": "a6-q21", "code": "CNT 4", "text": "L’ADC possède une méthode robuste de mémorisation (changement de posture, verbalisation répétée, etc…),"}, {"id": "a6-q22", "code": "CNT 4", "text": "L’ADC adapte sa méthode aux circonstances (partage d’attention, co-activité, etc…)."}, {"id": "a6-q23", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute, (ex: en cas de doute sur signal d’annonce, il se met en mesure de s’arrêter au signal annoncé),"}, {"id": "a6-q24", "code": "CNT 5", "text": "L’ADC accepte de pouvoir être confronté au doute,"}]}, {"id": "activite-7", "name": "Gestion des conditions de circulation", "questions": [{"id": "a7-q1", "code": "CT 1", "text": "L’ADC règle la marche du convoi en tenant compte des caractéristiques de l’EM et des véhicules remorqués,"}, {"id": "a7-q2", "code": "CT 1", "text": "L’ADC prend en compte les éléments extérieurs (météo, adhérence, profil, etc…)"}, {"id": "a7-q3", "code": "CT 1", "text": "L’ADC applique la conduite économique,"}, {"id": "a7-q4", "code": "CT 2", "text": "L’ADC est attentif aux indices présentés par ses IHM (écrans CCD, DAD, ETD, CAB signal, BSI, RST, KVB, Sirius, etc…) en fonction de ses conditions de circulation."}, {"id": "a7-q5", "code": "CT 3", "text": "L’ADC est capable d’identifier et maîtrise le régime d’exploitation sur lequel il circule,"}, {"id": "a7-q6", "code": "CT 3", "text": "L’ADC est capable d’identifier et maîtrise le mode de cantonnement,"}, {"id": "a7-q7", "code": "CT 3", "text": "L’ADC maîtrise les règles de circulation en traction électrique (bimode, 25kv, 1,5kv, givre),"}, {"id": "a7-q8", "code": "CT 3", "text": "L’ADC maîtrise les règles de circulation afférentes aux conditions météo (neige, vent, fortes chaleurs, etc…),"}, {"id": "a7-q9", "code": "CT 4", "text": "L’ADC maîtrise ses conditions de circulations vis-à-vis des enjeux de sécurité du personnel (utilisation du sifflet par ex lors d’une circulation en sens inverse du sens normal, respect signalisation de protection électrique,"}, {"id": "a7-q10", "code": "CNT 1", "text": "L’ADC prend en compte les menaces système (menaces liées au mode d’exploitation, de cantonnement, de traction, etc…),"}, {"id": "a7-q11", "code": "CNT 1", "text": "L’ADC prend en compte le risque de partage d’attention lié aux interactions avec d’autres acteurs (régul, AC, ASCT,…),"}, {"id": "a7-q12", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de ces thématiques,"}, {"id": "a7-q13", "code": "CNT 1", "text": "L’ADC prend en compte les éléments météo (visibilité, adhérence, neige, givre, vent, chaleur, etc…)"}, {"id": "a7-q14", "code": "CNT 1", "text": "L’ADC est capable de d’auto-évaluer son niveau de performance."}, {"id": "a7-q15", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs,"}, {"id": "a7-q16", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges et améliore la qualité et/ou la sécurité (ex: avis régul en cas de rencontre signaux fermés et détermination en commun d’une vitesse de circulation jusqu’à un point désigné),"}, {"id": "a7-q17", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a7-q18", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a7-q19", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris,"}, {"id": "a7-q20", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis,"}, {"id": "a7-q21", "code": "CNT 4", "text": "L’ADC se remémore les informations importantes (verbalisation, gestuelle spécifique, etc.),"}, {"id": "a7-q22", "code": "CNT 4", "text": "L’ADC est capable de traiter une information importante imbriquée dans d’autres tâches,"}, {"id": "a7-q23", "code": "CNT 4", "text": "L’ADC sait gérer le partage d’attention,"}, {"id": "a7-q24", "code": "CNT 4", "text": "L’ADC possède une méthode pour se protéger du biais d’habitude"}, {"id": "a7-q25", "code": "CNT 4", "text": "L’ADC possède une méthode pour se protéger des erreurs de perception"}, {"id": "a7-q26", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute. Par ex, il roule à la plus basse des vitesses de la plateforme le cas échéant, il poursuit à vitesse limitée si LTV et doute sur rencontre du tableau blanc de reprise, etc…,"}, {"id": "a7-q27", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute,"}, {"id": "a7-q28", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par cette situation,"}, {"id": "a7-q29", "code": "CNT 5", "text": "L’ADC possède une méthodologie: il prendre d’abord une mesure conservatoire puis cherche à lever le doute."}]}, {"id": "activite-8", "name": "Réalisation d’une manœuvre", "questions": [{"id": "a8-q1", "code": "CT 1", "text": "L’ADC utilise son EM de façon adaptée (gestion de la vitesse, utilisation du frein, etc…)."}, {"id": "a8-q2", "code": "CT 2", "text": "Utilisation adaptée des différents IHM de l’EM,"}, {"id": "a8-q3", "code": "CT 2", "text": "Utilisation adaptée des outils de communication (radio de manœuvre)."}, {"id": "a8-q4", "code": "CT 3", "text": "L’ADC détermine sans erreur la nature de son mouvement,"}, {"id": "a8-q5", "code": "CT 3", "text": "L’ADC maîtrise les procédures associées aux mouvements de manœuvre,"}, {"id": "a8-q6", "code": "CT 4", "text": "L’ADC connaît les enjeux SST associés à la réalisation d’une manœuvre (petits mouvements grandes menaces, etc…), et se comporte en conséquence."}, {"id": "a8-q7", "code": "CNT 1", "text": "L’ADC prend en compte les diverses menaces associées aux mouvements de manœuvre (SST, SEF, partage d’attention, communication, compréhension du thème, etc…),"}, {"id": "a8-q8", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a8-q9", "code": "CNT 1", "text": "L’ADC prend en compte les facteurs externes (météo, bruit, ambiance lumineuse, etc…),"}, {"id": "a8-q10", "code": "CNT 1", "text": "L’ADC est capable d’auto-évaluer son niveau de performance avant réalisation d’une manœuvre,"}, {"id": "a8-q11", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs,"}, {"id": "a8-q12", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges,"}, {"id": "a8-q13", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale,"}, {"id": "a8-q14", "code": "CNT 3", "text": "L’ADC connait les biais de communication,"}, {"id": "a8-q15", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a8-q16", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris,"}, {"id": "a8-q17", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis,"}, {"id": "a8-q18", "code": "CNT 4", "text": "L’ADC se remémore, reformule ou collationne ce qu’il lui faut: le thème et les modalités de manœuvre sont compris sans ambiguïté, ( par ex: ADC s’appuie sur le schéma du chantier, etc…),"}, {"id": "a8-q19", "code": "CNT 4", "text": "L’ADC n’hésite pas à signaler au CDM son éventuelle faible connaissance du chantier ou du site,"}, {"id": "a8-q20", "code": "CNT 4", "text": "L’ADC possède une méthode de travail qui lui permet d’être robuste dans les échanges avec le CDM"}, {"id": "a8-q21", "code": "CNT 5", "text": "ADC collecte toutes les informations utiles pour réaliser le mouvement de manœuvre,"}, {"id": "a8-q22", "code": "CNT 5", "text": "En cas de doute, provoque immédiatement l’arrêt de la circulation et ne se remet pas en mouvement sans avoir fait le point avec le chef de manœuvre,"}, {"id": "a8-q23", "code": "CNT 5", "text": "ADC réévalue sa décision en fonction de l’évolution du contexte de la manœuvre (signal intermédiaire non prévu, perte de la communication, informations incohérentes, etc…)."}]}, {"id": "activite-9", "name": "Réalisation d’un mouvement en sens inverse du sens normal", "questions": [{"id": "a9-q1", "code": "CT 1", "text": "L’ADC utilise son EM de façon adaptée à la circulation en sens inverse du sens normal,"}, {"id": "a9-q2", "code": "CT 1", "text": "L’ADC effectue ses reprises de vitesses ou ralentissements en respectant le MC de l’EM et en exploitant les divers fonctions permises par l’EM (Z-LICOU, type de frein, etc…)."}, {"id": "a9-q3", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en étant attentif à l’IV, sa fréquence d’observation est régulière,"}, {"id": "a9-q4", "code": "CT 2", "text": "Les transitions de vitesse sur Sirius sont étudiées en amont, et repérées le cas échéant,"}, {"id": "a9-q5", "code": "CT 2", "text": "Les différents IHM (IV, SIRIUS, VI, RST, GSM, SIAC, SIVE, portes, etc...) sont maîtrisés et utilisés en adéquation (paramétré, réglé, chargé, etc...) avec la situation."}, {"id": "a9-q6", "code": "CT 3", "text": "L’ADC est capable de différencier les différents types de mouvements en sens inverse du sens normal,"}, {"id": "a9-q7", "code": "CT 3", "text": "L’ADC maîtrise les règles associées à chaque type de mouvement en situation normale et perturbée."}, {"id": "a9-q8", "code": "CT 4", "text": "L’ADC connait les enjeux sécurité du personnel en fonction de la situation (risque de descente client du mauvais côté, risque de comportement dangereux des personnes aux abords de la voie),"}, {"id": "a9-q9", "code": "CNT 1", "text": "Prend en compte les menaces et les risques liés à la circulation en sens inverse du sens normal,"}, {"id": "a9-q10", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, ASCT, personnes en cabine…) et des enjeux associés,"}, {"id": "a9-q11", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a9-q12", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a9-q13", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de son niveau de compétence, de sa fatigue et de sa performance,"}, {"id": "a9-q14", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs,"}, {"id": "a9-q15", "code": "CNT 2", "text": "Il est conscient de faire partie d’un collectif de travail, son attitude favorise les échanges et la performance de ce collectif,"}, {"id": "a9-q16", "code": "CNT 2", "text": "L’ADC identifie une situation anormale et en fait part au collectif,"}, {"id": "a9-q17", "code": "CNT 3", "text": "L’ADC communique au moment opportun (ex: adc est émetteur d’une communication afin d’éviter de recevoir une sollicitation au mauvais moment),"}, {"id": "a9-q18", "code": "CNT 3", "text": "L’ADC identifie et communique avec le bon interlocuteur,"}, {"id": "a9-q19", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback) et intègre les enjeux associés,"}, {"id": "a9-q20", "code": "CNT 3", "text": "L’ADC comprend ce qui lui est transmis et prend le temps de questionner si besoin."}, {"id": "a9-q21", "code": "CNT 4", "text": "L’ADC anticipe, il élabore un projet en intégrant l’éventualité de circuler en sens inverse du sens normal (règles de circulation, indication de directions à observer, etc…),"}, {"id": "a9-q22", "code": "CNT 4", "text": "L’ADC est conscient d’être plus exposé aux situations imbriquées lorsqu’il circule en sens inverse du sens normal, et agit en conséquence,"}, {"id": "a9-q23", "code": "CNT 4", "text": "L’ADC possède une méthodologie dédiées aux situations particulières"}, {"id": "a9-q24", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute. Il roule à la plus basse des vitesses de la plateforme le cas échéant,"}, {"id": "a9-q25", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute,"}, {"id": "a9-q26", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie face au doute (1. mesure conservatoire, 2. levée du doute),"}]}, {"id": "activite-10", "name": "Traitement d’une anomalie à l’engin moteur", "questions": [{"id": "a10-q1", "code": "CT 1", "text": "L’ADC met en œuvre les MTI, oriente son dépannage,"}, {"id": "a10-q2", "code": "CT 1", "text": "L’ADC utilise son matériel en adéquation avec ce qu’autorise l’anomalie subie,"}, {"id": "a10-q3", "code": "CT 2", "text": "Exploite ses IHM et sait identifier un indice d’anomalie (distingue la situation normale de l’anomalie),"}, {"id": "a10-q4", "code": "CT 3", "text": "L’ADC connait et applique sans erreur les MTI,"}, {"id": "a10-q5", "code": "CT 3", "text": "L’ADC oriente sans erreur son dépannage (sondages, indices de défrettage, etc…),"}, {"id": "a10-q6", "code": "CT 3", "text": "L’ADC maîtrise sans erreur l’articulation des documents (MC/MMTO/GD),"}, {"id": "a10-q7", "code": "CT 3", "text": "L’ADC utilise sans erreur la documentation."}, {"id": "a10-q8", "code": "CT 4", "text": "L’ADC met en œuvre l’ensemble des mesures lui permettant d’assurer sa sécurité (risques électrique, risques chimiques, risques de heurt, etc,…)"}, {"id": "a10-q9", "code": "CNT 1", "text": "Prise en compte des risques et menaces liés à l’anomalie subie, (ensembles des menaces et des risques lors de la détection de l’anomalie, de son traitement et de l’émission des avis)."}, {"id": "a10-q10", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, ASCT,…),"}, {"id": "a10-q11", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a10-q12", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a10-q13", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a10-q14", "code": "CNT 2", "text": "L’ADC identifie ses interlocuteurs et comprend leurs rôles,"}, {"id": "a10-q15", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges et améliore la qualité de la communication,"}, {"id": "a10-q16", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale tout en restant pédagogue,"}, {"id": "a10-q17", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a10-q18", "code": "CNT 3", "text": "L’ADC communique avec les bons interlocuteurs (GEM activité, EIC selon contexte, PAC, Matériel, etc…),"}, {"id": "a10-q19", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback),"}, {"id": "a10-q20", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis (reformulation),"}, {"id": "a10-q21", "code": "CNT 4", "text": "L’ADC hiérarchise les priorités en cas d’anomalie (ex: survenue d’une anomalie lors de l’observation signaux, respect de la signalisation avant de traiter l’anomalie)"}, {"id": "a10-q22", "code": "CNT 4", "text": "L’ADC sait qu’en cas d’anomalie ses ressources cognitives sont impactées (ex: sa mémoire de traitement peut être rapidement saturée exposant à la perte d’informations essentielles) et intègre que son comportement peut être altéré."}, {"id": "a10-q23", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute (ex: bruit anormal cause inconnue, adc s’arrête et visite),"}, {"id": "a10-q24", "code": "CNT 5", "text": "L’ADC intègre pouvoir être exposé au doute,"}, {"id": "a10-q25", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}, {"id": "a10-q26", "code": "CNT 5", "text": "L’ADC connait la situation normale, il sait mettre en œuvre une méthodologie adaptée en cas d’écart tenu pour se mettre en sécurité puis  lever le doute."}]}, {"id": "activite-11", "name": "Traitement d’une anomalie d’équipement de sécurité", "questions": [{"id": "a11-q1", "code": "CT 1", "text": "L’ADC utilise son EM de façon rationnelle, notamment la reprise de marche après anomalie à un automatisme,"}, {"id": "a11-q2", "code": "CT 1", "text": "L’ADC met en œuvre le freinage lié à l’anomalie,"}, {"id": "a11-q3", "code": "CT 1", "text": "L’ADC maîtrise l’emplacement des appareillages lors du traitement de l’anomalie,"}, {"id": "a11-q4", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en étant attentif au bon fonctionnement des automatismes,"}, {"id": "a11-q5", "code": "CT 2", "text": "ADC connait les indices de prise en charge par un automatisme compte tenu du matériel qu’il utilise,"}, {"id": "a11-q6", "code": "CT 2", "text": "L’ADC maîtrise le GDI,"}, {"id": "a11-q7", "code": "CT 3", "text": "L’ADC maîtrise sans erreur les différents types d’anomalie d’automatisme, (VA, RS, DAAT,…),"}, {"id": "a11-q8", "code": "CT 3", "text": "L’ADC applique sans erreur les mesures immédiates et d’urgence en cas d’indice de non fonctionnement ou de prise en charge par un automatisme,"}, {"id": "a11-q9", "code": "CT 3", "text": "L’ADC détermine sans erreur les conditions de reprise de marche (technique et  circulation),"}, {"id": "a11-q10", "code": "CT 3", "text": "L’ADC connait et utilise sans erreur les différents documents utiles,"}, {"id": "a11-q11", "code": "CT 4", "text": "L’ADC met en sécurité sa circulation ainsi que lui-même lors d’une anomalie d’automatisme,"}, {"id": "a11-q12", "code": "CNT 1", "text": "Prendre en compte les menaces notamment liées aux anomalies d’automatismes,"}, {"id": "a11-q13", "code": "CNT 1", "text": "Identifie les risques liés à la perte d’un automatisme,"}, {"id": "a11-q14", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a11-q15", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a11-q16", "code": "CNT 2", "text": "L’ADC identifie ses interlocuteurs et comprend leurs rôles,"}, {"id": "a11-q17", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges et améliore la qualité de la communication,"}, {"id": "a11-q18", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale tout en restant pédagogue,"}, {"id": "a11-q19", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a11-q20", "code": "CNT 3", "text": "L’ADC communique avec les bons interlocuteurs (GEM activité, EIC selon contexte, PAC, Matériel, etc…),"}, {"id": "a11-q21", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback),"}, {"id": "a11-q22", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis (reformulation),"}, {"id": "a11-q23", "code": "CNT 4", "text": "L’ADC hiérarchise les priorités en cas d’anomalie (ex: survenue d’une anomalie lors de l’observation signaux, respect de la signalisation avant de traiter l’anomalie)"}, {"id": "a11-q24", "code": "CNT 4", "text": "L’ADC sait qu’en cas d’anomalie ses ressources cognitives sont impactées (ex: sa mémoire de traitement peut être rapidement saturée exposant à la perte d’informations essentielles) et intègre que son comportement peut être altéré."}, {"id": "a11-q25", "code": "CNT 4", "text": "L’ADC utilise des dispositifs de mémorisation pour gérer les interruptions de tâches,"}, {"id": "a11-q26", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute, utilise la documentation et l’appel au PAC lorsqu’il est prévu"}, {"id": "a11-q27", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}, {"id": "a11-q28", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie pour lever le doute,"}, {"id": "a11-q29", "code": "CNT 5", "text": "Prend en compte les informations utiles pour déterminer le point d’arrêt pertinent en fonction de l’urgence de la situation,"}]}, {"id": "activite-12", "name": "Traitement d’une anomalie aux matériels remorqués", "questions": [{"id": "a12-q1", "code": "CT 1", "text": "L’ADC adopte les comportement adapté à la situation et dans le respect des règles (mise en œuvre des mesures conservatoires associées à l’anomalie, etc…)"}, {"id": "a12-q2", "code": "CT 1", "text": "L’ADC applique sans erreur les conditions de reprises de marche associées à l’anomalie traitée,"}, {"id": "a12-q3", "code": "CT 2", "text": "ADC connaît la signification des diverses lampes de signalisation présentes sur les véhicules (voyageurs voire autres)."}, {"id": "a12-q4", "code": "CT 3", "text": "L’ADC connaît les éléments constitutifs des divers matériels remorqués,"}, {"id": "a12-q5", "code": "CT 3", "text": "L’ADC maîtrise les principes de fonctionnement des différents matériels remorqués,"}, {"id": "a12-q6", "code": "CT 3", "text": "L’ADC décode sans erreur l’ensemble des marquages des véhicules,"}, {"id": "a12-q7", "code": "CT 3", "text": "L’ADC maîtrise sans erreur l’utilisation des divers équipements"}, {"id": "a12-q8", "code": "CT 4", "text": "L’ADC utilise l’intégralité des EPI nécessaires,"}, {"id": "a12-q9", "code": "CT 4", "text": "L’ADC connaît applique les différentes procédures inhérentes à l’intervention sur un véhicule (risques de heurt, de chute, électrique, etc…)"}, {"id": "a12-q10", "code": "CNT 1", "text": "Prendre en compte les menaces et les risques associés aux diverses anomalies au matériel remorqué,"}, {"id": "a12-q11", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, AICR,…),"}, {"id": "a12-q12", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a12-q13", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a12-q14", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a12-q15", "code": "CNT 2", "text": "L’ADC identifie et comprend le rôle de ses interlocuteurs,"}, {"id": "a12-q16", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges et la qualité du travail collectif,"}, {"id": "a12-q17", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale, ou dangereuse."}, {"id": "a12-q18", "code": "CNT 3", "text": "L’ADC communique au moment opportun, et transmet des informations adaptées,"}, {"id": "a12-q19", "code": "CNT 3", "text": "L’ADC identifie les bons interlocuteurs,"}, {"id": "a12-q20", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback),"}, {"id": "a12-q21", "code": "CNT 3", "text": "L’ADC comprend ce qui lui est transmis (reformulation)."}, {"id": "a12-q22", "code": "CNT 4", "text": "L’ADC hiérarchise les priorités en cas d’anomalie (ex: survenue d’une au cours de tâches imbriquées),"}, {"id": "a12-q23", "code": "CNT 4", "text": "L’ADC sait qu’en cas d’anomalie ses ressources cognitives sont impactées (ex: sa mémoire de traitement peut être rapidement saturée exposant à la perte d’informations essentielles) et intègre que son comportement peut être altéré,"}, {"id": "a12-q24", "code": "CNT 4", "text": "L’ADC utilise des dispositifs de mémorisation pour gérer les interruptions de tâches,"}, {"id": "a12-q25", "code": "CNT 4", "text": "L’ADC possède une méthode de travail structurée et adaptée aux différents éléments de contexte (posture pro-active avec agents sédentaires ou personnel de bord)."}, {"id": "a12-q26", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie qui intègre le doute. Il prend d’abord des mesures conservatoires en fonction, puis lève le doute,"}, {"id": "a12-q27", "code": "CNT 5", "text": "L’ADC accepte de pouvoir être en situation de doute,"}, {"id": "a12-q28", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}, {"id": "a12-q29", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie adaptée pour lever le doute,"}]}, {"id": "activite-13", "name": "Traitement d’une anomalie de signalisation", "questions": [{"id": "a13-q1", "code": "CT 1", "text": "L’ADC utilise son EM de manière adaptée à la situation (ex: si BPurg enfoncé: freins non desserrés en cas d’adhérence dégradée, abaissement pantos si la règle l’impose, etc…),"}, {"id": "a13-q2", "code": "CT 2", "text": "Balaye son pupitre de manière adaptée en étant attentif aux indices d’anomalie de signalisation (CAB signal)."}, {"id": "a13-q3", "code": "CT 3", "text": "L’ADC est capable de différencier les différents types d’anomalies de signalisation, il connaît la norme et sait identifier un écart,"}, {"id": "a13-q4", "code": "CT 3", "text": "L’ADC anticipe certaines anomalies (signaux masqués de croix de St André par exemple),"}, {"id": "a13-q5", "code": "CT 3", "text": "L’ADC identifie et décode sans erreur la signalisation qu’il doit respecter (signalisation mécanique, etc…),"}, {"id": "a13-q6", "code": "CT 3", "text": "L’ADC connait et utilise sans erreur les différents documents (formulaire ANSI, autorisations de franchissement, etc…),"}, {"id": "a13-q7", "code": "CT 3", "text": "L’ADC met en œuvre les mesures adaptées à la situation qu’il rencontre."}, {"id": "a13-q8", "code": "CT 4", "text": "L’ADC respecte les règles (PERS, projections neiges/ballast, tunnels, traversée de voie, etc…),"}, {"id": "a13-q9", "code": "CT 4", "text": "L’ADC prend en compte les éléments de contexte (situation perturbée) et les intègre dans sa gestion de la sécurité du personnel (risque de relâchement après traitement d’une anomalie),"}, {"id": "a13-q10", "code": "CNT 1", "text": "ADC prend en compte en opérationnel le risque d’erreur et les menaces associés aux anomalies de signalisation (ex: rappel de ralent dont un feu serait éteint, risque de ne faire qu’aviser, signal fermé intempestivement et pantos non abaissés, etc…),"}, {"id": "a13-q11", "code": "CNT 1", "text": "ADC prend en compte les interactions possibles avec d’autres acteurs (partage d’attention),"}, {"id": "a13-q12", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a13-q13", "code": "CNT 1", "text": "ADC prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a13-q14", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de la fatigue et de sa performance,"}, {"id": "a13-q15", "code": "CNT 2", "text": "L’ADC identifie et comprend le rôle de ses interlocuteurs,"}, {"id": "a13-q16", "code": "CNT 2", "text": "Il admet faire partie d’un système, son attitude favorise les échanges et la qualité du travail collectif,"}, {"id": "a13-q17", "code": "CNT 2", "text": "L’ADC est capable de faire interrompre une situation qu’il considère comme anormale, ou dangereuse."}, {"id": "a13-q18", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a13-q19", "code": "CNT 3", "text": "L’ADC communique avec les bons interlocuteurs,"}, {"id": "a13-q20", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris (feedback),"}, {"id": "a13-q21", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis (reformulation),"}, {"id": "a13-q22", "code": "CNT 4", "text": "L’ADC hiérarchise ses actions,"}, {"id": "a13-q23", "code": "CNT 4", "text": "L’ADC est capable de traiter une situation d’anomalie imbriquée dans d’autres tâches,"}, {"id": "a13-q24", "code": "CNT 4", "text": "L’ADC intègre les différentes pressions liées au contexte."}, {"id": "a13-q25", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie qui intègre le doute, il accepte d’être en situation de doute,"}, {"id": "a13-q26", "code": "CNT 5", "text": "L’ADC met en œuvre une mesure conservatoire avant de chercher à lever le doute,"}, {"id": "a13-q27", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation (hiérarchisation des action inadaptée, exposition au danger, etc…)"}]}, {"id": "activite-14", "name": "Traitement d’une anomalie à l’infrastructure", "questions": [{"id": "a14-q1", "code": "CT 1", "text": "L’ADC utilise son EM de façon rationnelle,"}, {"id": "a14-q2", "code": "CT 1", "text": "L’ADC situe et maitrise l’utilisation ainsi que l’emplacement des dispositifs permettant la mise en œuvre des gestes d’urgence (baissez pantos, BP-Urg,..),"}, {"id": "a14-q3", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en étant attentif aux indices de situations d’urgence,"}, {"id": "a14-q4", "code": "CT 3", "text": "L’ADC est capable de différencier les différents types d’anomalies à l’infrastructure,"}, {"id": "a14-q5", "code": "CT 3", "text": "L’ADC connait les éléments constituant l’infrastructure,"}, {"id": "a14-q6", "code": "CT 3", "text": "L’ADC applique sans erreurs les procédures compte tenu de l’anomalie constatée, (couverture d’obstacle,..),"}, {"id": "a14-q7", "code": "CT 3", "text": "L’ADC connait et mets en œuvre  sans erreur les gestes d’urgence,"}, {"id": "a14-q8", "code": "CT 3", "text": "L’ADC utilise sans erreur ses formulaires de communication et différents avis,"}, {"id": "a14-q9", "code": "CT 3", "text": "L’ADC détermine sans erreur sa reprise de marche,"}, {"id": "a14-q10", "code": "CT 4", "text": "L’ADC connait la topographie des lignes qu’il va parcourir,"}, {"id": "a14-q11", "code": "CT 4", "text": "L’ADC possède et utilise les EPIS le cas échéant,"}, {"id": "a14-q12", "code": "CT 4", "text": "Donne les avis aux interlocuteurs notamment en cas de couverture d’obstacle,"}, {"id": "a14-q13", "code": "CT 4", "text": "Identifie les menaces contextuelles,"}, {"id": "a14-q14", "code": "CNT 1", "text": "Prendre en compte les menaces notamment liées aux anomalies d’infrastructures,"}, {"id": "a14-q15", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, AICR,…),"}, {"id": "a14-q16", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a14-q17", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a14-q18", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a14-q19", "code": "CNT 1", "text": "Prends en compte les menaces contextuelles,"}, {"id": "a14-q20", "code": "CNT 2", "text": "L’ADC comprends l’organisation dans laquelle il évolue,"}, {"id": "a14-q21", "code": "CNT 2", "text": "L’ADC s’assure que ses interlocuteurs aient bien compris la situation,"}, {"id": "a14-q22", "code": "CNT 2", "text": "L’ADC avis au moment opportun,"}, {"id": "a14-q23", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a14-q24", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a14-q25", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris,"}, {"id": "a14-q26", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis,"}, {"id": "a14-q27", "code": "CNT 4", "text": "L’ADC possède une méthodologie de travail robuste,"}, {"id": "a14-q28", "code": "CNT 4", "text": "L’ADC est capable de traiter une information présentée imbriquée dans d’autres tâches,"}, {"id": "a14-q29", "code": "CNT 4", "text": "L’ADC utilise des dispositifs de mémorisation,"}, {"id": "a14-q30", "code": "CNT 5", "text": "L’ADC met en œuvre une stratégie afin d’intégrer le doute."}, {"id": "a14-q31", "code": "CNT 5", "text": "L’ADC accepte d’être en situation de doute,"}, {"id": "a14-q32", "code": "CNT 5", "text": "L’ADC prend en compte les risques pouvant être générés par la situation,"}]}, {"id": "activite-15", "name": "Traitement d’une situation d’urgence", "questions": [{"id": "a15-q1", "code": "CT 1", "text": "L’ADC situe et maitrise l’utilisation ainsi que l’emplacement des dispositifs permettant la mise en œuvre des gestes d’urgence (baissez pantos, BP-Urg,..),"}, {"id": "a15-q2", "code": "CT 2", "text": "Balaye son pupitre de manière organisée en étant attentif aux indices de situations d’urgence,"}, {"id": "a15-q3", "code": "CT 3", "text": "L’ADC est capable de différencier les différentes situations d’urgences,"}, {"id": "a15-q4", "code": "CT 3", "text": "L’ADC applique sans erreur les gestes d’urgences compte tenu de la situation,"}, {"id": "a15-q5", "code": "CT 3", "text": "Connait les règles à mettre en œuvre pour assurer la protection d’obstacles,"}, {"id": "a15-q6", "code": "CT 4", "text": "L’ADC prends en compte sa sécurité compte tenu de la situation d’urgence,"}, {"id": "a15-q7", "code": "CT 4", "text": "L’ADC possède ses EPIS pour effectuer sa mission,"}, {"id": "a15-q8", "code": "CNT 1", "text": "Prendre en compte les menaces notamment liées aux situations d’urgences,"}, {"id": "a15-q9", "code": "CNT 1", "text": "Prise en compte d’interactions possibles avec d’autres acteurs (régul, AICR,…),"}, {"id": "a15-q10", "code": "CNT 1", "text": "L’ADC peut citer des REX traitant de cette thématique,"}, {"id": "a15-q11", "code": "CNT 1", "text": "Prend en compte les éléments météo notamment la visibilité le cas échéant,"}, {"id": "a15-q12", "code": "CNT 1", "text": "Est capable de s’auto-évaluer, prise en compte de sa fatigue et de sa performance,"}, {"id": "a15-q13", "code": "CNT 2", "text": "L’ADC comprend le rôle de ses interlocuteurs,"}, {"id": "a15-q14", "code": "CNT 2", "text": "Il admet faire parti d’un système, son attitude favorise la communication,"}, {"id": "a15-q15", "code": "CNT 3", "text": "L’ADC communique au moment opportun,"}, {"id": "a15-q16", "code": "CNT 3", "text": "L’ADC communique avec le bon interlocuteur,"}, {"id": "a15-q17", "code": "CNT 3", "text": "L’ADC s’assure que ce qu’il émet est compris,"}, {"id": "a15-q18", "code": "CNT 3", "text": "L’ADC comprend avec assurance ce qui lui est transmis,"}, {"id": "a15-q19", "code": "CNT 4", "text": "L’ADC possède une méthodologie robuste,"}, {"id": "a15-q20", "code": "CNT 4", "text": "L’ADC est capable de traiter une information présentée imbriquée dans d’autres tâches,"}, {"id": "a15-q21", "code": "CNT 4", "text": "L’ADC est capable de gérer le stress en situation d’urgence,"}, {"id": "a15-q22", "code": "CNT 5", "text": "L’ADC n’hésite pas à mettre en œuvre les gestes d’urgence,"}, {"id": "a15-q23", "code": "CNT 5", "text": "Il est capable de citer la norme, et de mettre en œuvre une méthodologie pour lever le doute,"}]}];
+
+
+    const MEMORY_STORAGE = {};
+    let STORAGE_AVAILABLE = true;
+
+    function safeStorageGet(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (error) {
+        STORAGE_AVAILABLE = false;
+        return Object.prototype.hasOwnProperty.call(MEMORY_STORAGE, key)
+          ? MEMORY_STORAGE[key]
+          : null;
+      }
+    }
+
+    function safeStorageSet(key, value) {
+      MEMORY_STORAGE[key] = value;
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (error) {
+        STORAGE_AVAILABLE = false;
+        return false;
+      }
+    }
+
+    const COMPETENCY_NAMES = {
+      "CT 1": "Conduite et gestion du matériel roulant",
+      "CT 2": "Gestion des IHM",
+      "CT 3": "Application des procédures",
+      "CT 4": "Prise en compte de la sécurité du personnel",
+      "CNT 1": "Conscience de la situation et perception des risques",
+      "CNT 2": "Travail avec le collectif et leadership",
+      "CNT 3": "Communication",
+      "CNT 4": "Méthodologie, gestion de la charge de travail et du stress",
+      "CNT 5": "Prise de décision et gestion du doute"
+    };
+    const CUSTOM_DB_KEY = "observations-accompagnement-custom-questions-v1";
+    let CUSTOM_QUESTIONS = [];
+
+    try {
+      const savedCustomQuestions = JSON.parse(safeStorageGet(CUSTOM_DB_KEY) || "[]");
+      if (Array.isArray(savedCustomQuestions)) CUSTOM_QUESTIONS = savedCustomQuestions;
+    } catch (error) {
+      console.warn("Lecture de la base personnalisée impossible", error);
+    }
+
+    CUSTOM_QUESTIONS.forEach(record => {
+      if (!record || !record.id || !record.code || !record.text) return;
+      let activity = ACTIVITIES.find(item => item.id === (record.activityId || "custom-activity"));
+      if (!activity) {
+        activity = {
+          id: record.activityId || "custom-activity",
+          name: record.activityName || "Observations personnalisées",
+          questions: []
+        };
+        ACTIVITIES.push(activity);
+      }
+      if (!activity.questions.some(question => question.id === record.id)) {
+        activity.questions.push({
+          id: record.id,
+          code: record.code,
+          text: record.text,
+          custom: true
+        });
+      }
+    });
+
+    const STORAGE_KEY = "observations-accompagnement-v2";
+    const LEGACY_KEY = "observations-accompagnement-v1";
+
+    const QUESTION_BY_ID = new Map();
+    const ACTIVITY_BY_ID = new Map();
+    const QUESTION_ORDER = [];
+    ACTIVITIES.forEach(activity => {
+      ACTIVITY_BY_ID.set(activity.id, activity);
+      activity.questions.forEach(question => {
+        QUESTION_BY_ID.set(question.id, { ...question, activityId: activity.id, activityName: activity.name });
+        QUESTION_ORDER.push(question.id);
+      });
+    });
+
+    const ALL_CODES = [...new Set(QUESTION_ORDER.map(id => QUESTION_BY_ID.get(id).code).filter(Boolean))]
+      .sort((a, b) => {
+        const ma = a.match(/^(CT|CNT)\s*(\d+)/i);
+        const mb = b.match(/^(CT|CNT)\s*(\d+)/i);
+        if (!ma || !mb) return a.localeCompare(b, "fr");
+        const groupA = ma[1].toUpperCase() === "CT" ? 0 : 1;
+        const groupB = mb[1].toUpperCase() === "CT" ? 0 : 1;
+        return groupA - groupB || Number(ma[2]) - Number(mb[2]);
+      });
+
+    let store = loadStore();
+    let currentView = "home";
+    let builderSelected = new Set(store.builderSelectedIds || []);
+    let builderRatings = { ...(store.builderRatings || {}) };
+    let builderNotes = { ...(store.builderNotes || {}) };
+    let builderQuestioning = { ...(store.builderQuestioning || {}) };
+    let observationFilter = { type: "all", value: "" };
+    let saveTimer = null;
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeText(value) {
+      return String(value ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase("fr")
+        .trim();
+    }
+
+    function normalizeCode(code) {
+      return String(code || "")
+        .toUpperCase()
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/^(CT|CNT)(\d+)$/, "$1 $2");
+    }
+
+    function compactCode(code) {
+      return normalizeCode(code).replace(/\s+/g, "");
+    }
+
+    function competencyName(code) {
+      return COMPETENCY_NAMES[normalizeCode(code)] || "";
+    }
+
+    function competencyFullLabel(code) {
+      const compact = compactCode(code);
+      const name = competencyName(code);
+      return name ? `${compact} – ${name}` : compact;
+    }
+
+    function competencyColorClass(code) {
+      const compact = compactCode(code).toLowerCase();
+      return compact ? `competency-${compact}` : "";
+    }
+
+    function todayISO() {
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    }
+
+    function uid() {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+      return "obs-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function blankStore() {
+      return {
+        version: 2,
+        observations: [],
+        activeObservationId: null,
+        builderSelectedIds: [],
+        builderRatings: {},
+        builderNotes: {},
+        builderQuestioning: {},
+        builderMode: "activity",
+        builderEditingObservationId: null,
+        legacyMigrated: false
+      };
+    }
+
+    function loadStore() {
+      try {
+        const parsed = JSON.parse(safeStorageGet(STORAGE_KEY) || "null");
+        if (parsed && Array.isArray(parsed.observations)) return { ...blankStore(), ...parsed };
+      } catch (error) {
+        console.warn("Stockage v2 illisible", error);
+      }
+
+      const fresh = blankStore();
+      try {
+        const legacy = JSON.parse(safeStorageGet(LEGACY_KEY) || "null");
+        if (legacy && Array.isArray(legacy.selectedActivityIds) && legacy.selectedActivityIds.length) {
+          const selectedQuestions = ACTIVITIES
+            .filter(activity => legacy.selectedActivityIds.includes(activity.id))
+            .flatMap(activity => activity.questions.map(question => question.id));
+
+          const migrated = {
+            id: uid(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: "draft",
+            meta: {
+              obsDate: legacy.meta?.obsDate || todayISO(),
+              observerName: legacy.meta?.observerName || "",
+              agentName: legacy.meta?.agentName || "",
+              mission: legacy.meta?.mission || ""
+            },
+            questionIds: selectedQuestions,
+            answers: legacy.answers || {},
+            notes: legacy.notes || {}
+          };
+          fresh.observations.push(migrated);
+          fresh.activeObservationId = migrated.id;
+          fresh.legacyMigrated = true;
+        }
+      } catch (error) {
+        console.warn("Migration v1 impossible", error);
+      }
+      safeStorageSet(STORAGE_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+
+    function saveStore() {
+      store.builderSelectedIds = [...builderSelected];
+      store.builderRatings = { ...builderRatings };
+      store.builderNotes = { ...builderNotes };
+      store.builderQuestioning = { ...builderQuestioning };
+      safeStorageSet(STORAGE_KEY, JSON.stringify(store));
+    }
+
+    function scheduleSave(message = "") {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        saveStore();
+        if (message) showToast(message);
+      }, 220);
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function getObservation(id = store.activeObservationId) {
+      return store.observations.find(obs => obs.id === id) || null;
+    }
+
+    function questionListForObservation(obs) {
+      return (obs?.questionIds || []).map(id => QUESTION_BY_ID.get(id)).filter(Boolean);
+    }
+
+    function ratingCounts(obs) {
+      const counts = { NA: 0, P: 0, S: 0, "S+": 0 };
+      let answered = 0;
+      (obs?.questionIds || []).forEach(id => {
+        const value = obs.answers?.[id];
+        if (value) {
+          answered += 1;
+          if (Object.prototype.hasOwnProperty.call(counts, value)) counts[value] += 1;
+        }
+      });
+      return { ...counts, answered, total: obs?.questionIds?.length || 0 };
+    }
+
+    function completion(obs) {
+      const counts = ratingCounts(obs);
+      return counts.total ? Math.round(counts.answered / counts.total * 100) : 0;
+    }
+
+    function observationTitle(obs, index = 0) {
+      const agent = (obs.meta?.agentName || "").trim();
+      const mission = (obs.meta?.mission || "").trim();
+      const date = obs.meta?.obsDate || "";
+      if (agent && date) return `${agent} - ${date}`;
+      if (agent) return agent;
+      if (mission && date) return `${mission} - ${date}`;
+      if (mission) return mission;
+      return `Observation ${index + 1}${date ? " - " + date : ""}`;
+    }
+
+    function touchObservation(obs) {
+      obs.updatedAt = new Date().toISOString();
+      scheduleSave();
+    }
+
+    function goTo(view) {
+      currentView = view;
+      $("#homeView").classList.toggle("hidden", view !== "home");
+      $("#builderView").classList.toggle("hidden", view !== "builder");
+      $("#observationView").classList.toggle("hidden", view !== "observation");
+      $("#builderFooter").classList.toggle("hidden", view !== "builder");
+
+      if (view === "home") renderHome();
+      if (view === "builder") renderBuilder();
+      if (view === "observation") renderObservation();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderHome() {
+      const observations = store.observations;
+      const complete = observations.filter(obs => completion(obs) === 100);
+      const incomplete = observations.filter(obs => completion(obs) < 100);
+      const ratings = observations.reduce((sum, obs) => sum + ratingCounts(obs).answered, 0);
+
+      $("#metricTotal").textContent = observations.length;
+      $("#metricDraft").textContent = incomplete.length;
+      $("#metricFinal").textContent = complete.length;
+      $("#metricRatings").textContent = ratings;
+
+      const pdfButton = $("#summaryPdfBtn");
+      pdfButton.disabled = observations.length === 0;
+      pdfButton.textContent = observations.length
+        ? `PDF de toutes les fiches (${observations.length})`
+        : "PDF de toutes les fiches";
+
+      const list = $("#observationList");
+      if (!observations.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <strong>Aucune fiche enregistrée</strong>
+            Créez une première observation, cotez-la, puis consultez son résumé.
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = observations.map((obs, index) => {
+        const counts = ratingCounts(obs);
+        const percent = completion(obs);
+        const isComplete = percent === 100;
+        const codes = [...new Set(obs.questionIds.map(id => QUESTION_BY_ID.get(id)?.code).filter(Boolean))]
+          .map(compactCode)
+          .join(", ");
+
+        return `
+          <article class="saved-card" data-observation-id="${obs.id}">
+            <div class="saved-card-top">
+              <div class="saved-card-main">
+                <h3>${escapeHtml(observationTitle(obs, index))}</h3>
+                <div class="saved-meta">
+                  ${obs.questionIds.length} observation${obs.questionIds.length > 1 ? "s" : ""}
+                  ${codes ? " · " + escapeHtml(codes) : ""}
+                </div>
+              </div>
+              <span class="status-badge ${isComplete ? "status-final" : "status-draft"}">
+                ${isComplete ? "Complète" : "Incomplète"}
+              </span>
+            </div>
+            <div class="mini-progress"><span style="width:${percent}%"></span></div>
+            <div class="saved-stats">${counts.answered} / ${counts.total} cotations · ${percent} %</div>
+            <div class="saved-actions">
+              <button class="btn btn-primary btn-small" type="button" data-action="open">Consulter</button>
+              <button class="btn btn-success btn-small" type="button" data-action="pdf">PDF</button>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function startNewObservation() {
+      $("#activityBuilderSearch").value = "";
+      $("#globalQuestionSearch").value = "";
+      store.builderEditingObservationId = null;
+      builderSelected = new Set();
+      builderRatings = {};
+      builderNotes = {};
+      builderQuestioning = {};
+      store.builderSelectedIds = [];
+      store.builderRatings = {};
+      store.builderNotes = {};
+      store.builderQuestioning = {};
+      store.builderMode = "activity";
+      saveStore();
+      goTo("builder");
+    }
+
+    function editObservationQuestions(obs) {
+      if (!obs || obs.status === "finalized") return;
+      store.builderEditingObservationId = obs.id;
+      builderSelected = new Set(obs.questionIds);
+      builderRatings = { ...(obs.answers || {}) };
+      builderNotes = { ...(obs.notes || {}) };
+      builderQuestioning = { ...(obs.questioning || {}) };
+      store.builderSelectedIds = [...builderSelected];
+      store.builderRatings = { ...builderRatings };
+      store.builderNotes = { ...builderNotes };
+      store.builderQuestioning = { ...builderQuestioning };
+      store.builderMode = "activity";
+      saveStore();
+      goTo("builder");
+    }
+
+    function renderBuilder() {
+      const editing = getObservation(store.builderEditingObservationId);
+      $("#builderTitle").textContent = editing ? "Modifier les observations" : "Nouvelle observation";
+      $("#createObservationBtn").textContent = editing ? "Actualiser le résumé" : "Voir la fiche résumé";
+
+      $$(".tab-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.builderMode === store.builderMode);
+      });
+      $("#activityBuilderPane").classList.toggle("hidden", store.builderMode !== "activity");
+      $("#globalBuilderPane").classList.toggle("hidden", store.builderMode !== "global");
+
+      try {
+        if (store.builderMode === "activity") renderActivityBuilder();
+        else renderGlobalSearch();
+        updateBuilderSummary();
+      } catch (error) {
+        console.error("Erreur du constructeur", error);
+        const target = store.builderMode === "activity" ? $("#activityBuilderList") : $("#globalSearchContent");
+        if (target) {
+          target.innerHTML = `
+            <div class="builder-error">
+              Le constructeur n’a pas pu s’afficher. Revenez à l’accueil puis ouvrez de nouveau « Nouvelle observation ».
+            </div>`;
+        }
+      }
+    }
+
+    function renderActivityBuilder() {
+      const query = normalizeText($("#activityBuilderSearch").value);
+      const activities = ACTIVITIES
+        .filter(activity => activity.id !== "custom-activity")
+        .filter(activity => {
+          if (!query) return true;
+          const activityText = normalizeText(activity.name);
+          const questionText = normalizeText(
+            activity.questions
+              .map(question => `${question.text} ${question.code} ${competencyName(question.code)}`)
+              .join(" ")
+          );
+          return activityText.includes(query) || questionText.includes(query);
+        });
+
+      const container = $("#activityBuilderList");
+      if (!activities.length) {
+        container.innerHTML = `<div class="panel empty-state">Aucune activité de conduite ne correspond à la recherche.</div>`;
+        return;
+      }
+
+      container.innerHTML = activities.map((activity, activityIndex) => {
+        const selectedInActivity = activity.questions.filter(question => builderSelected.has(question.id)).length;
+        const grouped = ALL_CODES.map(code => [
+          code,
+          activity.questions
+            .map(question => QUESTION_BY_ID.get(question.id) || {
+              ...question,
+              activityId: activity.id,
+              activityName: activity.name
+            })
+            .filter(question => normalizeCode(question.code) === normalizeCode(code))
+        ]);
+
+        const openActivity =
+          selectedInActivity > 0 ||
+          (query && normalizeText(activity.name).includes(query));
+
+        return `
+          <details
+            class="driving-activity"
+            data-driving-activity="${escapeHtml(activity.id)}"
+            ${openActivity ? "open" : ""}
+          >
+            <summary>
+              <div class="driving-activity-summary">
+                <span class="driving-activity-icon">${activityIndex + 1}</span>
+                <span class="driving-activity-main">
+                  <strong>${escapeHtml(activity.name)}</strong>
+                  <span data-activity-selection-count="${escapeHtml(activity.id)}">
+                    ${selectedInActivity} observation${selectedInActivity > 1 ? "s" : ""} sélectionnée${selectedInActivity > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span class="chevron">›</span>
+              </div>
+            </summary>
+
+            <div class="driving-activity-body">
+              <div class="activity-selection-tools">
+                <button
+                  class="btn btn-secondary btn-small"
+                  type="button"
+                  data-toggle-driving-activity="${escapeHtml(activity.id)}"
+                  data-activity-question-ids="${activity.questions.map(question => question.id).join(",")}"
+                >
+                  ${selectedInActivity === activity.questions.length && activity.questions.length
+                    ? "Tout retirer"
+                    : "Tout sélectionner dans l’activité"}
+                </button>
+              </div>
+
+              <div class="nested-competency-list">
+                ${grouped.map(([code, questions]) =>
+                  competencyGroupHtml(code, questions, activity, true)
+                ).join("")}
+              </div>
+            </div>
+          </details>`;
+      }).join("");
+    }
+
+    function groupQuestionsByCode(questions) {
+      const groups = new Map();
+      questions.forEach(question => {
+        const code = normalizeCode(question.code || "Sans code");
+        if (!groups.has(code)) groups.set(code, []);
+        groups.get(code).push(question);
+      });
+      return [...groups.entries()].sort((a, b) => {
+        const indexA = ALL_CODES.findIndex(code => normalizeCode(code) === normalizeCode(a[0]));
+        const indexB = ALL_CODES.findIndex(code => normalizeCode(code) === normalizeCode(b[0]));
+        return indexA - indexB;
+      });
+    }
+
+    function competencyGroupHtml(code, questions, activity = null, allowAdd = false) {
+      const selectedCount = questions.filter(question => builderSelected.has(question.id)).length;
+      const allSelected = questions.length > 0 && selectedCount === questions.length;
+      const activityId = activity?.id || "";
+      const activityName = activity?.name || "";
+      const colorClass = competencyColorClass(code);
+
+      return `
+        <details
+          class="competency-group"
+          data-builder-code="${escapeHtml(normalizeCode(code))}"
+          ${selectedCount ? "open" : ""}
+        >
+          <summary>
+            <div class="competency-summary">
+              <span class="competency-code ${colorClass}">${escapeHtml(compactCode(code))}</span>
+              <span class="competency-summary-main">
+                <strong>${escapeHtml(competencyName(code) || "Compétence")}</strong>
+                <span data-code-count="${escapeHtml(normalizeCode(code))}">
+                  ${selectedCount} sélectionnée${selectedCount > 1 ? "s" : ""} ·
+                  ${questions.length} disponible${questions.length > 1 ? "s" : ""}
+                </span>
+              </span>
+              <span class="chevron">›</span>
+            </div>
+          </summary>
+
+          <div class="competency-body">
+            ${questions.length ? `
+              <div class="competency-tools">
+                <button
+                  class="btn btn-secondary btn-small"
+                  type="button"
+                  data-toggle-code="${escapeHtml(normalizeCode(code))}"
+                  data-question-ids="${questions.map(question => question.id).join(",")}"
+                >${allSelected ? "Tout retirer" : "Tout sélectionner"}</button>
+              </div>
+
+              ${questions.map(question =>
+                questionChoiceHtml(question, question.activityName, false)
+              ).join("")}
+            ` : `
+              <div class="activity-empty-competency">
+                Aucune observation enregistrée pour cette compétence.
+              </div>
+            `}
+
+            ${allowAdd ? `
+              <hr class="add-observation-separator">
+              <div class="custom-observation-form">
+                <label>
+                  Ajouter une observation dans ${escapeHtml(competencyFullLabel(code))}
+                  pour « ${escapeHtml(activityName)} »
+                </label>
+                <textarea
+                  data-custom-observation-text
+                  placeholder="Saisir une nouvelle situation ou un comportement à observer…"
+                ></textarea>
+                <div class="custom-observation-actions">
+                  <button
+                    class="btn btn-primary btn-small"
+                    type="button"
+                    data-add-custom-observation
+                    data-custom-code="${escapeHtml(normalizeCode(code))}"
+                    data-custom-activity-id="${escapeHtml(activityId)}"
+                    data-custom-activity-name="${escapeHtml(activityName)}"
+                  >Ajouter à cette activité</button>
+                </div>
+              </div>
+            ` : ""}
+          </div>
+        </details>`;
+    }
+
+    function persistCustomQuestions() {
+      const success = safeStorageSet(CUSTOM_DB_KEY, JSON.stringify(CUSTOM_QUESTIONS));
+      if (!success) {
+        showToast("La nouvelle observation reste disponible pendant cette ouverture, mais son enregistrement permanent est bloqué");
+      }
+      return success;
+    }
+
+    function addCustomObservation(button) {
+      const form = button.closest(".custom-observation-form");
+      const textarea = form?.querySelector("[data-custom-observation-text]");
+      const observationText = textarea?.value.trim() || "";
+
+      if (!observationText) {
+        showToast("Saisissez d’abord la nouvelle observation");
+        textarea?.focus();
+        return;
+      }
+
+      const code = normalizeCode(button.dataset.customCode);
+      const activityId = button.dataset.customActivityId;
+      const activityName = button.dataset.customActivityName;
+      const activity = ACTIVITY_BY_ID.get(activityId);
+
+      if (!activity) {
+        showToast("L’activité de conduite est introuvable");
+        return;
+      }
+
+      const id = `custom-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const baseQuestion = { id, code, text: observationText, custom: true };
+      const indexedQuestion = { ...baseQuestion, activityId, activityName };
+      const record = { ...indexedQuestion, createdAt: new Date().toISOString() };
+
+      activity.questions.push(baseQuestion);
+      QUESTION_BY_ID.set(id, indexedQuestion);
+      QUESTION_ORDER.push(id);
+      CUSTOM_QUESTIONS.push(record);
+      persistCustomQuestions();
+
+      builderSelected.add(id);
+      store.builderSelectedIds = [...builderSelected];
+      saveStore();
+
+      renderActivityBuilder();
+      updateBuilderSummary();
+
+      setTimeout(() => {
+        const panel = document.querySelector(`[data-builder-rating-panel="${id}"]`);
+        panel?.classList.remove("hidden");
+        panel?.scrollIntoView({ behavior: "smooth", block: "center" });
+        panel?.querySelector('input[type="radio"]')?.focus();
+      }, 60);
+
+      showToast("Observation ajoutée : vous pouvez la coter immédiatement");
+    }
+
+    function questionChoiceHtml(question, activityName, includeActivity = false) {
+      const checked = builderSelected.has(question.id);
+      const currentRating = builderRatings[question.id] || "";
+      const currentNote = builderNotes[question.id] || "";
+
+      return `
+        <div
+          class="question-choice-card"
+          data-builder-question-card="${question.id}"
+          data-observation-text="${escapeHtml(question.text)}"
+        >
+          <label class="question-choice">
+            <input
+              type="checkbox"
+              data-question-choice="${question.id}"
+              ${checked ? "checked" : ""}
+            >
+            <span class="choice-main">
+              <span class="choice-text">
+                ${escapeHtml(question.text)}
+                ${question.custom ? `<span class="custom-badge">Ajoutée</span>` : ""}
+                ${currentRating ? `<span class="instant-rated">Cotée ${escapeHtml(currentRating)}</span>` : ""}
+              </span>
+              ${includeActivity ? `<span class="choice-activity">${escapeHtml(activityName)}</span>` : ""}
+            </span>
+          </label>
+
+          <div
+            class="builder-rating ${checked ? "" : "hidden"}"
+            data-builder-rating-panel="${question.id}"
+          >
+            <span class="builder-rating-title">Coter cette observation :</span>
+
+            ${["NA", "P", "S", "S+"].map(value => `
+              <label class="rating-label" data-rating="${value}">
+                <input
+                  type="radio"
+                  name="builder-rating-${question.id}"
+                  value="${value}"
+                  data-builder-rating-question="${question.id}"
+                  ${currentRating === value ? "checked" : ""}
+                >
+                <span>${value}</span>
+              </label>
+            `).join("")}
+
+            <label class="builder-questioning">
+              <input
+                type="checkbox"
+                data-builder-questioning-question="${question.id}"
+                ${builderQuestioning[question.id] ? "checked" : ""}
+              >
+              Cotation réalisée par questionnement
+            </label>
+
+            <div class="builder-comment">
+              <label for="comment-${question.id}">Commentaire facultatif — prérempli après la cotation</label>
+              <textarea
+                id="comment-${question.id}"
+                data-builder-comment-question="${question.id}"
+                placeholder="Ajouter un commentaire sur cette cotation…"
+              >${escapeHtml(currentNote)}</textarea>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderGlobalSearch() {
+      const queryRaw = $("#globalQuestionSearch").value;
+      const query = normalizeText(queryRaw);
+      const content = $("#globalSearchContent");
+
+      if (!query) {
+        content.innerHTML = `
+          <div class="global-hint">
+            Saisissez un mot présent dans une observation, une activité de conduite ou une compétence.<br>
+            Exemple : <strong>vitesse</strong>, <strong>préparation</strong>, <strong>gestion des IHM</strong>.
+          </div>`;
+        return;
+      }
+
+      const results = QUESTION_ORDER
+        .map(id => QUESTION_BY_ID.get(id))
+        .filter(Boolean)
+        .filter(question =>
+          normalizeText(`${question.text} ${question.activityName} ${question.code} ${competencyName(question.code)}`)
+            .includes(query)
+        );
+
+      if (!results.length) {
+        content.innerHTML = `<div class="global-hint">Aucune observation trouvée pour « ${escapeHtml(queryRaw)} ».</div>`;
+        return;
+      }
+
+      const visible = results.slice(0, 150);
+      const groupedByCode = groupQuestionsByCode(visible);
+      content.innerHTML = `
+        <div class="section-copy" style="margin-bottom:9px">
+          ${results.length} résultat${results.length > 1 ? "s" : ""}${results.length > visible.length ? ` · les ${visible.length} premiers sont affichés` : ""}
+        </div>
+        <div class="direct-competency-list">
+          ${groupedByCode.map(([code, questions]) =>
+            competencyGroupHtml(code, questions, null, false)
+          ).join("")}
+        </div>`;
+    }
+
+    function updateBuilderSummary() {
+      const count = builderSelected.size;
+      const rated = [...builderSelected].filter(id => builderRatings[id]).length;
+      const codes = [...new Set([...builderSelected]
+        .map(id => QUESTION_BY_ID.get(id)?.code)
+        .filter(Boolean))]
+        .sort((a, b) =>
+          ALL_CODES.findIndex(code => normalizeCode(code) === normalizeCode(a)) -
+          ALL_CODES.findIndex(code => normalizeCode(code) === normalizeCode(b))
+        )
+        .map(compactCode);
+
+      $("#builderSelectedCount").textContent =
+        `${count} observation${count > 1 ? "s" : ""} sélectionnée${count > 1 ? "s" : ""}`;
+      $("#builderCodeSummary").textContent = count
+        ? `${rated} cotée${rated > 1 ? "s" : ""} immédiatement · ${codes.join(" · ")}`
+        : "Aucune observation sélectionnée";
+      $("#createObservationBtn").disabled = count === 0;
+
+      $$("[data-code-count]").forEach(element => {
+        const group = element.closest(".competency-group");
+        const ids = (group?.querySelector("[data-question-ids]")?.dataset.questionIds || "")
+          .split(",")
+          .filter(Boolean);
+        const selectedCount = ids.filter(id => builderSelected.has(id)).length;
+        const ratedCount = ids.filter(id => builderRatings[id]).length;
+
+        element.textContent =
+          `${selectedCount} sélectionnée${selectedCount > 1 ? "s" : ""} · ` +
+          `${ratedCount} cotée${ratedCount > 1 ? "s" : ""} · ` +
+          `${ids.length} disponible${ids.length > 1 ? "s" : ""}`;
+
+        const toggle = group?.querySelector("[data-toggle-code]");
+        if (toggle) {
+          toggle.textContent = ids.length && selectedCount === ids.length
+            ? "Tout retirer"
+            : "Tout sélectionner";
+        }
+      });
+
+      $$("[data-activity-selection-count]").forEach(element => {
+        const activityId = element.dataset.activitySelectionCount;
+        const activity = ACTIVITY_BY_ID.get(activityId);
+        const ids = activity?.questions.map(question => question.id) || [];
+        const selectedCount = ids.filter(id => builderSelected.has(id)).length;
+        const ratedCount = ids.filter(id => builderRatings[id]).length;
+
+        element.textContent =
+          `${selectedCount} sélectionnée${selectedCount > 1 ? "s" : ""} · ` +
+          `${ratedCount} cotée${ratedCount > 1 ? "s" : ""}`;
+
+        const toggle = document.querySelector(`[data-toggle-driving-activity="${activityId}"]`);
+        if (toggle) {
+          toggle.textContent =
+            ids.length && selectedCount === ids.length
+              ? "Tout retirer"
+              : "Tout sélectionner dans l’activité";
+        }
+      });
+    }
+
+    function commitBuilder() {
+      const selectedIds = QUESTION_ORDER.filter(id => builderSelected.has(id));
+      if (!selectedIds.length) return;
+
+      const selectedAnswers = Object.fromEntries(
+        selectedIds
+          .filter(id => builderRatings[id])
+          .map(id => [id, builderRatings[id]])
+      );
+
+      const selectedNotes = Object.fromEntries(
+        selectedIds
+          .filter(id => String(builderNotes[id] || "").trim())
+          .map(id => [id, String(builderNotes[id]).trim()])
+      );
+
+      const selectedQuestioning = Object.fromEntries(
+        selectedIds
+          .filter(id => builderQuestioning[id])
+          .map(id => [id, true])
+      );
+
+      const editing = getObservation(store.builderEditingObservationId);
+      if (editing) {
+        editing.questionIds = selectedIds;
+        editing.answers = selectedAnswers;
+        editing.notes = selectedNotes;
+        editing.questioning = selectedQuestioning;
+        editing.updatedAt = new Date().toISOString();
+        store.activeObservationId = editing.id;
+        store.builderEditingObservationId = null;
+
+        builderRatings = {};
+        builderNotes = {};
+        builderQuestioning = {};
+        store.builderRatings = {};
+        store.builderNotes = {};
+        store.builderQuestioning = {};
+
+        saveStore();
+        showToast("Fiche résumé actualisée");
+        goTo("observation");
+        return;
+      }
+
+      const obs = {
+        id: uid(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: "draft",
+        meta: {
+          obsDate: todayISO(),
+          observerName: "",
+          agentName: "",
+          mission: ""
+        },
+        questionIds: selectedIds,
+        answers: selectedAnswers,
+        notes: selectedNotes,
+        questioning: selectedQuestioning,
+        developmentActions: {}
+      };
+
+      store.observations.push(obs);
+      store.activeObservationId = obs.id;
+      store.builderEditingObservationId = null;
+
+      builderRatings = {};
+      builderNotes = {};
+      builderQuestioning = {};
+      store.builderRatings = {};
+      store.builderNotes = {};
+      store.builderQuestioning = {};
+
+      saveStore();
+      showToast("Fiche résumé enregistrée");
+      goTo("observation");
+    }
+
+    function synthesisKey(activityId, code) {
+      return `${activityId}::${normalizeCode(code)}`;
+    }
+
+    function ratingClassName(rating) {
+      if (rating === "S+") return "rating-sp";
+      if (rating === "S") return "rating-s";
+      if (rating === "P") return "rating-p";
+      if (rating === "NA") return "rating-na";
+      return "rating-empty";
+    }
+
+    function weakestRating(ratings) {
+      const values = ratings.filter(Boolean);
+      if (!values.length) return "";
+      if (values.includes("P")) return "P";
+      if (values.includes("S")) return "S";
+      if (values.includes("S+")) return "S+";
+      if (values.includes("NA")) return "NA";
+      return "";
+    }
+
+    function buildSynthesisRows(obs) {
+      const groups = new Map();
+
+      (obs.questionIds || []).forEach(id => {
+        const question = QUESTION_BY_ID.get(id);
+        if (!question) return;
+
+        const key = synthesisKey(question.activityId, question.code);
+        if (!groups.has(key)) {
+          groups.set(key, {
+            key,
+            activityId: question.activityId,
+            activityName: question.activityName,
+            code: normalizeCode(question.code),
+            ratings: [],
+            observations: [],
+            comments: []
+          });
+        }
+
+        const group = groups.get(key);
+        const rating = obs.answers?.[id] || "";
+        const comment = String(obs.notes?.[id] || "").trim();
+
+        if (rating) group.ratings.push(rating);
+        group.observations.push(question.text);
+        if (comment) group.comments.push(comment);
+      });
+
+      return [...groups.values()]
+        .map(group => ({
+          ...group,
+          rating: weakestRating(group.ratings),
+          observationText: [...new Set(
+            group.comments.length ? group.comments : group.observations
+          )].join(" • ")
+        }))
+        .sort((a, b) => {
+          const activityA = ACTIVITIES.findIndex(item => item.id === a.activityId);
+          const activityB = ACTIVITIES.findIndex(item => item.id === b.activityId);
+          const codeA = ALL_CODES.findIndex(code => normalizeCode(code) === a.code);
+          const codeB = ALL_CODES.findIndex(code => normalizeCode(code) === b.code);
+          return activityA - activityB || codeA - codeB;
+        });
+    }
+
+    function previousSynthesisRating(obs, activityId, code) {
+      const currentDate = new Date(obs.createdAt || 0).getTime();
+      const agent = normalizeText(obs.meta?.agentName || "");
+
+      const previous = store.observations
+        .filter(item => item.id !== obs.id)
+        .filter(item => {
+          if (!agent) return true;
+          return normalizeText(item.meta?.agentName || "") === agent;
+        })
+        .filter(item => new Date(item.createdAt || 0).getTime() <= currentDate)
+        .sort((a, b) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
+
+      for (const item of previous) {
+        const row = buildSynthesisRows(item).find(candidate =>
+          candidate.activityId === activityId &&
+          normalizeCode(candidate.code) === normalizeCode(code)
+        );
+        if (row?.rating) return row.rating;
+      }
+
+      return "-";
+    }
+
+    function ensureDevelopmentActions(obs, synthesisRows) {
+      if (!obs.developmentActions || typeof obs.developmentActions !== "object") {
+        obs.developmentActions = {};
+      }
+
+      synthesisRows
+        .filter(row => row.rating === "P")
+        .forEach(row => {
+          if (!obs.developmentActions[row.key]) {
+            obs.developmentActions[row.key] = {
+              checked: true,
+              action: "",
+              dueDate: ""
+            };
+          }
+        });
+    }
+
+    function matrixTableHtml(obs) {
+      const rows = buildSynthesisRows(obs);
+      const activityIds = [...new Set(rows.map(row => row.activityId))];
+
+      const body = activityIds.map(activityId => {
+        const activity = ACTIVITY_BY_ID.get(activityId);
+        const activityRows = rows.filter(row => row.activityId === activityId);
+
+        return `
+          <tr>
+            <td>${escapeHtml(activity?.name || activityRows[0]?.activityName || "Activité")}</td>
+            ${ALL_CODES.map(code => {
+              const row = activityRows.find(item =>
+                normalizeCode(item.code) === normalizeCode(code)
+              );
+              const rating = row?.rating || "";
+              return `
+                <td class="matrix-rating ${ratingClassName(rating)}">
+                  ${escapeHtml(rating)}
+                </td>`;
+            }).join("")}
+          </tr>`;
+      }).join("");
+
+      return `
+        <div class="matrix-scroll">
+          <table class="competency-matrix">
+            <thead>
+              <tr>
+                <th>Activité de conduite</th>
+                ${ALL_CODES.map(code => `
+                  <th title="${escapeHtml(competencyName(code))}">
+                    <span class="matrix-code ${competencyColorClass(code)}">${escapeHtml(compactCode(code))}</span>
+                  </th>
+                `).join("")}
+              </tr>
+            </thead>
+            <tbody>${body}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function developmentTableHtml(obs, interactive = true) {
+      const synthesisRows = buildSynthesisRows(obs);
+      ensureDevelopmentActions(obs, synthesisRows);
+
+      const rows = synthesisRows.filter(row => row.rating === "P");
+      if (!rows.length) {
+        return `
+          <div class="development-empty">
+            Aucune cotation P : aucune action de développement n’est cochée automatiquement.
+          </div>`;
+      }
+
+      return `
+        <div class="development-scroll">
+          <table class="development-table">
+            <thead>
+              <tr>
+                <th>Activité de conduite</th>
+                <th>Compétence</th>
+                <th>Ancienne cot.</th>
+                <th>Nouvelle cot.</th>
+                <th>Observation</th>
+                <th>Action</th>
+                <th>Échéance</th>
+                <th>Retenir</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => {
+                const actionData = obs.developmentActions[row.key] || {
+                  checked: true,
+                  action: "",
+                  dueDate: ""
+                };
+                const previous = previousSynthesisRating(obs, row.activityId, row.code);
+
+                return `
+                  <tr data-development-key="${escapeHtml(row.key)}">
+                    <td>${escapeHtml(row.activityName)}</td>
+                    <td>
+                      <span class="code-badge ${competencyColorClass(row.code)}">
+                        ${escapeHtml(competencyFullLabel(row.code))}
+                      </span>
+                    </td>
+                    <td>${escapeHtml(previous)}</td>
+                    <td>
+                      <span class="summary-rating rating-p">P</span>
+                    </td>
+                    <td>${escapeHtml(row.observationText)}</td>
+                    <td>
+                      ${interactive ? `
+                        <textarea
+                          data-development-action
+                          placeholder="Saisir l’action à mettre en œuvre…"
+                        >${escapeHtml(actionData.action || "")}</textarea>
+                      ` : escapeHtml(actionData.action || "")}
+                    </td>
+                    <td>
+                      ${interactive ? `
+                        <input
+                          type="date"
+                          data-development-due
+                          value="${escapeHtml(actionData.dueDate || "")}"
+                        >
+                      ` : escapeHtml(actionData.dueDate || "")}
+                    </td>
+                    <td>
+                      ${interactive ? `
+                        <input
+                          type="checkbox"
+                          data-development-checked
+                          ${actionData.checked !== false ? "checked" : ""}
+                        >
+                      ` : (actionData.checked !== false ? "Oui" : "Non")}
+                    </td>
+                  </tr>`;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function renderCompetencySynthesis(obs) {
+      const synthesisContainer = $("#competencySynthesisContainer");
+      const developmentContainer = $("#developmentContainer");
+
+      synthesisContainer.innerHTML = `
+        <section class="panel synthesis-panel">
+          <h2>Synthèse des compétences</h2>
+          <p>
+            Chaque case est remplie automatiquement à partir des cotations.
+            En cas de plusieurs cotations sur une même activité et une même compétence,
+            la cotation la plus faible est retenue.
+          </p>
+          ${matrixTableHtml(obs)}
+        </section>`;
+
+      developmentContainer.innerHTML = `
+        <section class="panel synthesis-panel">
+          <h2>Développement des compétences</h2>
+          <p>
+            Les lignes correspondant à une cotation P sont créées et cochées automatiquement.
+            Les intitulés activité, compétence, ancienne et nouvelle cotation, ainsi que l’observation,
+            sont préremplis.
+          </p>
+          <span class="auto-rule">Règle automatique : P → action de développement cochée</span>
+          <div style="margin-top:10px">
+            ${developmentTableHtml(obs, true)}
+          </div>
+        </section>`;
+
+      saveStore();
+    }
+
+    function renderObservation() {
+      const obs = getObservation();
+      if (!obs) {
+        goTo("home");
+        return;
+      }
+
+      const obsIndex = store.observations.findIndex(item => item.id === obs.id);
+      $("#activeObservationTitle").textContent = observationTitle(obs, obsIndex);
+      $("#activeObservationStatus").textContent = "Fiche résumé enregistrée automatiquement";
+
+      const switcher = $("#observationSwitcher");
+      switcher.innerHTML = store.observations.map((item, index) =>
+        `<option value="${item.id}" ${item.id === obs.id ? "selected" : ""}>${escapeHtml(observationTitle(item, index))}</option>`
+      ).join("");
+
+      ["obsDate", "observerName", "agentName", "mission"].forEach(field => {
+        const input = document.getElementById(field);
+        input.value = obs.meta?.[field] || (field === "obsDate" ? todayISO() : "");
+        input.disabled = false;
+      });
+
+      renderCompetencySynthesis(obs);
+      renderQuestions(obs);
+      updateObservationProgress(obs);
+    }
+
+    function renderShortcuts(obs) {
+      const countsByCode = {};
+      ALL_CODES.forEach(code => countsByCode[code] = 0);
+      obs.questionIds.forEach(id => {
+        const code = QUESTION_BY_ID.get(id)?.code;
+        if (code) countsByCode[code] = (countsByCode[code] || 0) + 1;
+      });
+
+      const bar = $("#shortcutBar");
+      bar.innerHTML = `
+        <button class="shortcut ${observationFilter.type === "all" ? "active" : ""}" type="button" data-filter-type="all">Toutes</button>
+        <button class="shortcut ${observationFilter.type === "unanswered" ? "active" : ""}" type="button" data-filter-type="unanswered">À coter</button>
+        ${ALL_CODES.map(code => `
+          <button
+            class="shortcut ${observationFilter.type === "code" && observationFilter.value === code ? "active" : ""}"
+            type="button"
+            data-filter-type="code"
+            data-filter-value="${escapeHtml(code)}"
+            ${countsByCode[code] ? "" : "disabled"}
+          >${escapeHtml(competencyFullLabel(code))} · ${countsByCode[code]}</button>
+        `).join("")}`;
+    }
+
+    function renderQuestions(obs) {
+      const grouped = new Map();
+
+      obs.questionIds.forEach(id => {
+        const question = QUESTION_BY_ID.get(id);
+        if (!question) return;
+        if (!grouped.has(question.activityId)) grouped.set(question.activityId, []);
+        grouped.get(question.activityId).push(question);
+      });
+
+      const container = $("#questionContainer");
+      container.innerHTML = [...grouped.entries()].map(([activityId, questions]) => {
+        const activity = ACTIVITY_BY_ID.get(activityId);
+
+        const cards = questions.map((question, index) => {
+          const rating = obs.answers?.[question.id] || "";
+          const note = obs.notes?.[question.id] || "";
+          const questioned = Boolean(obs.questioning?.[question.id]);
+          const ratingClass =
+            rating === "S+" ? "rating-sp" :
+            rating === "S" ? "rating-s" :
+            rating === "P" ? "rating-p" :
+            rating === "NA" ? "rating-na" :
+            "rating-empty";
+
+          return `
+            <article class="question-card ${rating ? "answered" : ""}">
+              <div class="question-meta">
+                <span class="code-badge ${competencyColorClass(question.code)}">${escapeHtml(competencyFullLabel(question.code) || "Sans compétence")}</span>
+                <span class="question-number">${index + 1} / ${questions.length}</span>
+              </div>
+              <p class="question-text">${escapeHtml(question.text)}</p>
+              <div class="summary-answer-row">
+                <span class="summary-answer-label">Cotation</span>
+                <span class="summary-rating ${ratingClass}">
+                  ${escapeHtml(rating || "Non cotée")}
+                </span>
+              </div>
+              ${questioned ? `
+                <span class="questioning-badge">☑ Cotation par questionnement</span>
+              ` : ""}
+
+              ${note ? `
+                <div class="summary-note">
+                  <strong>Note</strong>
+                  ${escapeHtml(note)}
+                </div>
+              ` : ""}
+            </article>`;
+        }).join("");
+
+        return `
+          <section class="activity-section">
+            <div class="activity-section-header">
+              <h3>${escapeHtml(activity?.name || "Activité")}</h3>
+              <span>${questions.length} observation${questions.length > 1 ? "s" : ""}</span>
+            </div>
+            <div class="question-list">${cards}</div>
+          </section>`;
+      }).join("");
+    }
+
+    function updateObservationProgress(obs) {
+      const counts = ratingCounts(obs);
+      const percent = counts.total ? Math.round(counts.answered / counts.total * 100) : 0;
+
+      $("#progressLabel").textContent = `${percent} % complété`;
+      $("#progressCount").textContent = `${counts.answered} / ${counts.total} réponses`;
+      $("#progressBar").style.width = `${percent}%`;
+      $("#countNA").textContent = counts.NA;
+      $("#countP").textContent = counts.P;
+      $("#countS").textContent = counts.S;
+      $("#countSP").textContent = counts["S+"];
+
+      const byActivity = new Map();
+      obs.questionIds.forEach(id => {
+        const question = QUESTION_BY_ID.get(id);
+        if (!question) return;
+        if (!byActivity.has(question.activityId)) byActivity.set(question.activityId, { total: 0, answered: 0 });
+        const item = byActivity.get(question.activityId);
+        item.total += 1;
+        if (obs.answers?.[id]) item.answered += 1;
+      });
+      byActivity.forEach((value, activityId) => {
+        const element = document.querySelector(`[data-section-progress="${activityId}"]`);
+        if (element) element.textContent = `${value.answered} / ${value.total}`;
+      });
+    }
+
+    function applyObservationFilter() {
+      $$(".question-card").forEach(card => {
+        const code = card.dataset.code || "";
+        const rating = card.dataset.rating || "";
+        let visible = true;
+        if (observationFilter.type === "unanswered") visible = !rating;
+        if (observationFilter.type === "code") visible = code === observationFilter.value;
+        card.classList.toggle("hidden", !visible);
+      });
+
+      $$(".activity-section").forEach(section => {
+        const visibleCards = $$(".question-card:not(.hidden)", section).length;
+        section.classList.toggle("hidden", visibleCards === 0);
+      });
+
+      $$(".shortcut").forEach(button => {
+        const type = button.dataset.filterType;
+        const value = button.dataset.filterValue || "";
+        const active = type === observationFilter.type && (type !== "code" || value === observationFilter.value);
+        button.classList.toggle("active", active);
+      });
+    }
+
+    function finalizeObservation() {
+      const obs = getObservation();
+      if (!obs) return;
+      const counts = ratingCounts(obs);
+      if (!counts.total || counts.answered !== counts.total) {
+        showToast(`Il reste ${counts.total - counts.answered} question(s) à coter avant la finalisation`);
+        observationFilter = { type: "unanswered", value: "" };
+        renderShortcuts(obs);
+        applyObservationFilter();
+        return;
+      }
+      obs.status = "finalized";
+      obs.updatedAt = new Date().toISOString();
+      saveStore();
+      renderObservation();
+      showToast("Observation finalisée");
+    }
+
+    function reopenObservation() {
+      const obs = getObservation();
+      if (!obs) return;
+      obs.status = "draft";
+      obs.updatedAt = new Date().toISOString();
+      saveStore();
+      renderObservation();
+      showToast("Observation réouverte");
+    }
+
+    function deleteObservation(id = store.activeObservationId) {
+      const obs = getObservation(id);
+      if (!obs) return;
+      if (!window.confirm(`Supprimer « ${observationTitle(obs, store.observations.indexOf(obs))} » ?`)) return;
+      store.observations = store.observations.filter(item => item.id !== id);
+      if (store.activeObservationId === id) {
+        store.activeObservationId = store.observations[0]?.id || null;
+      }
+      saveStore();
+      showToast("Observation supprimée");
+      goTo("home");
+    }
+
+    function duplicateObservation(id) {
+      const source = getObservation(id);
+      if (!source) return;
+      const copy = {
+        ...JSON.parse(JSON.stringify(source)),
+        id: uid(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: "draft"
+      };
+      copy.meta.obsDate = todayISO();
+      store.observations.push(copy);
+      store.activeObservationId = copy.id;
+      saveStore();
+      showToast("Observation dupliquée");
+      goTo("observation");
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function exportCurrentCSV() {
+      const obs = getObservation();
+      if (!obs) return;
+      const index = store.observations.indexOf(obs);
+      const rows = [
+        ["Observation", observationTitle(obs, index)],
+        ["Statut", obs.status === "finalized" ? "Finalisée" : "Brouillon"],
+        ["Date", obs.meta?.obsDate || ""],
+        ["Observateur", obs.meta?.observerName || ""],
+        ["Agent observé", obs.meta?.agentName || ""],
+        ["Mission / train", obs.meta?.mission || ""],
+        [],
+        ["Activité", "Compétence", "Question", "Cotation", "Note"]
+      ];
+
+      obs.questionIds.forEach(id => {
+        const q = QUESTION_BY_ID.get(id);
+        if (!q) return;
+        rows.push([q.activityName, competencyFullLabel(q.code), q.text, obs.answers?.[id] || "", obs.notes?.[id] || ""]);
+      });
+
+      const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(";")).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `observation-${obs.meta?.obsDate || todayISO()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("Export CSV créé");
+    }
+
+    function createObservationPdf(obs) {
+      if (!obs) return;
+
+      const index = store.observations.indexOf(obs);
+      const counts = ratingCounts(obs);
+      const rows = obs.questionIds.map(id => {
+        const q = QUESTION_BY_ID.get(id);
+        if (!q) return "";
+
+        const rating = obs.answers?.[id] || "";
+        const label = rating || "Non cotée";
+        const cls =
+          rating === "S+" ? "rate-sp" :
+          rating === "S" ? "rate-s" :
+          rating === "P" ? "rate-p" :
+          rating === "NA" ? "rate-na" :
+          "rate-empty";
+
+        return `
+          <tr>
+            <td>${escapeHtml(q.activityName)}</td>
+            <td>${escapeHtml(competencyFullLabel(q.code))}</td>
+            <td>${escapeHtml(q.text)}</td>
+            <td><span class="rate ${cls}">${escapeHtml(label)}</span></td>
+            <td>${obs.questioning?.[id] ? "Oui" : "Non"}</td>
+            <td>${escapeHtml(obs.notes?.[id] || "")}</td>
+          </tr>`;
+      }).join("");
+
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        showToast("Le navigateur a bloqué la fenêtre du PDF");
+        return;
+      }
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>${escapeHtml(observationTitle(obs, index))}</title>
+          <style>
+            @page { size: A4; margin: 11mm; }
+            * { box-sizing: border-box; }
+            body { margin: 0; color: #17212b; font-family: Arial, sans-serif; font-size: 9pt; }
+            .toolbar { position: sticky; top: 0; z-index: 10; padding: 10px; background: #12355b; text-align: center; }
+            .toolbar button { padding: 9px 15px; border: 0; border-radius: 7px; color: #12355b; background: #fff; font-weight: 700; cursor: pointer; }
+            h1 { margin: 0 0 8px; color: #12355b; text-align: center; font-size: 18pt; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 5px; border: 1px solid #bfcbd5; vertical-align: top; text-align: left; }
+            th { color: #12355b; background: #e8f2f9; }
+            .meta { margin-bottom: 8px; }
+            .meta th { width: 13%; }
+            .counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+            .counts span { padding: 5px 9px; border: 1px solid #d7e0e8; border-radius: 999px; }
+            .questions th:nth-child(1) { width: 18%; }
+            .questions th:nth-child(2) { width: 17%; }
+            .questions th:nth-child(3) { width: 37%; }
+            .questions th:nth-child(4) { width: 9%; }
+            .questions th:nth-child(5) { width: 10%; }
+            .questions th:nth-child(6) { width: 17%; }
+            .rate { display: inline-block; min-width: 45px; padding: 3px 5px; border-radius: 5px; text-align: center; font-weight: 800; }
+            .rate-na { color: #fff; background: #66727d; }
+            .rate-p { color: #fff; background: #e67e22; }
+            .rate-s { color: #fff; background: #238443; }
+            .rate-sp { color: #123b1d; background: #91d9a0; }
+            .rate-empty { color: #607080; background: #edf1f4; }
+            h2 { margin: 14px 0 6px; color: #12355b; font-size: 13pt; }
+            .matrix-scroll, .development-scroll { overflow: visible; border: 0; }
+            .competency-matrix, .development-table { width: 100%; min-width: 0; border-collapse: collapse; font-size: 7pt; }
+            .competency-matrix th, .competency-matrix td,
+            .development-table th, .development-table td {
+              padding: 4px;
+              border: 1px solid #bfcbd5;
+              vertical-align: top;
+            }
+            .matrix-code { display: inline-block; padding: 3px 5px; border-radius: 4px; color: #fff; font-weight: 700; }
+            .matrix-rating { text-align: center; font-weight: 800; }
+            .rating-na { color: #fff; background: #66727d; }
+            .rating-p { color: #fff; background: #e67e22; }
+            .rating-s { color: #fff; background: #238443; }
+            .rating-sp { color: #123b1d; background: #91d9a0; }
+            .rating-empty { color: #999; background: #f3f5f6; }
+            .code-badge { display: inline-block; padding: 3px 5px; border-radius: 4px; color: #fff; font-weight: 700; }
+            .development-empty { padding: 8px; border: 1px dashed #aaa; }
+            @media print { .toolbar { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="toolbar"><button onclick="window.print()">Enregistrer en PDF</button></div>
+          <h1>${escapeHtml(observationTitle(obs, index))}</h1>
+          <table class="meta">
+            <tr><th>Date</th><td>${escapeHtml(obs.meta?.obsDate || "")}</td><th>Observateur</th><td>${escapeHtml(obs.meta?.observerName || "")}</td></tr>
+            <tr><th>Agent observé</th><td>${escapeHtml(obs.meta?.agentName || "")}</td><th>Mission / train</th><td>${escapeHtml(obs.meta?.mission || "")}</td></tr>
+          </table>
+          <div class="counts">
+            <span>NA : <b>${counts.NA}</b></span>
+            <span>P : <b>${counts.P}</b></span>
+            <span>S : <b>${counts.S}</b></span>
+            <span>S+ : <b>${counts["S+"]}</b></span>
+            <span>Total : <b>${counts.total}</b></span>
+          </div>
+          <h2>Synthèse des compétences</h2>
+          ${matrixTableHtml(obs)}
+
+          <h2>Développement des compétences</h2>
+          ${developmentTableHtml(obs, false)}
+
+          <h2>Détail des observations</h2>
+          <table class="questions">
+            <thead><tr><th>Activité</th><th>Compétence</th><th>Observation</th><th>Cotation</th><th>Questionnement</th><th>Note</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <script>
+            window.addEventListener("load", () => setTimeout(() => window.print(), 350));
+          <\/script>
+        
+  <script>
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(error => {
+          console.warn("Service worker :", error);
+        });
+      });
+    }
+  </script>
+
+</body>
+        </html>`);
+
+      printWindow.document.close();
+      showToast("Choisissez « Enregistrer au format PDF »");
+    }
+
+    function createSummaryPdf() {
+      if (!store.observations.length) return;
+      const aggregate = store.observations.reduce((acc, obs) => {
+        const c = ratingCounts(obs);
+        acc.NA += c.NA;
+        acc.P += c.P;
+        acc.S += c.S;
+        acc["S+"] += c["S+"];
+        acc.total += c.total;
+        return acc;
+      }, { NA: 0, P: 0, S: 0, "S+": 0, total: 0 });
+
+      const observationsHtml = store.observations.map((obs, index) => {
+        const counts = ratingCounts(obs);
+        const rows = obs.questionIds.map(id => {
+          const q = QUESTION_BY_ID.get(id);
+          if (!q) return "";
+          const rating = obs.answers?.[id] || "";
+          const cls = rating === "S+" ? "rate-sp" : `rate-${rating.toLowerCase()}`;
+          return `
+            <tr>
+              <td>${escapeHtml(q.activityName)}</td>
+              <td>${escapeHtml(competencyFullLabel(q.code))}</td>
+              <td>${escapeHtml(q.text)}</td>
+              <td><span class="rate ${cls}">${escapeHtml(rating)}</span></td>
+              <td>${obs.questioning?.[id] ? "Oui" : "Non"}</td>
+              <td>${escapeHtml(obs.notes?.[id] || "")}</td>
+            </tr>`;
+        }).join("");
+
+        return `
+          <section class="observation">
+            <h2>${escapeHtml(observationTitle(obs, index))}</h2>
+            <table class="meta">
+              <tr><th>Date</th><td>${escapeHtml(obs.meta?.obsDate || "")}</td><th>Observateur</th><td>${escapeHtml(obs.meta?.observerName || "")}</td></tr>
+              <tr><th>Agent observé</th><td>${escapeHtml(obs.meta?.agentName || "")}</td><th>Mission / train</th><td>${escapeHtml(obs.meta?.mission || "")}</td></tr>
+            </table>
+            <div class="counts">
+              <span>NA : <b>${counts.NA}</b></span>
+              <span>P : <b>${counts.P}</b></span>
+              <span>S : <b>${counts.S}</b></span>
+              <span>S+ : <b>${counts["S+"]}</b></span>
+            </div>
+            <h3>Synthèse des compétences</h3>
+            ${matrixTableHtml(obs)}
+
+            <h3>Développement des compétences</h3>
+            ${developmentTableHtml(obs, false)}
+
+            <h3>Détail des observations</h3>
+            <table class="questions">
+              <thead><tr><th>Activité</th><th>Comp.</th><th>Question</th><th>Cotation</th><th>Questionnement</th><th>Note</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </section>`;
+      }).join("");
+
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        showToast("Le navigateur a bloqué la fenêtre du PDF");
+        return;
+      }
+
+      printWindow.document.open();
+      printWindow.document.write(`<!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Résumé des observations</title>
+          <style>
+            @page { size: A4; margin: 11mm; }
+            * { box-sizing: border-box; }
+            body { margin: 0; color: #17212b; font-family: Arial, sans-serif; font-size: 9pt; }
+            .toolbar { position: sticky; top: 0; z-index: 10; padding: 10px; background: #12355b; text-align: center; }
+            .toolbar button { padding: 9px 15px; border: 0; border-radius: 7px; color: #12355b; background: #fff; font-weight: 700; cursor: pointer; }
+            header { text-align: center; margin-bottom: 12px; }
+            h1 { margin: 0 0 4px; color: #12355b; font-size: 18pt; }
+            .global { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 10px 0 16px; }
+            .global div { padding: 7px; border: 1px solid #d7e0e8; border-radius: 7px; text-align: center; }
+            .global b { display: block; font-size: 13pt; }
+            .observation { break-before: page; }
+            .observation:first-of-type { break-before: auto; }
+            h2 { margin: 0 0 7px; padding: 7px 9px; color: #fff; background: #12355b; font-size: 13pt; }
+            h3 { margin: 12px 0 5px; color: #12355b; font-size: 11pt; }
+            table { width: 100%; border-collapse: collapse; }
+            .matrix-scroll, .development-scroll { overflow: visible; border: 0; }
+            .competency-matrix, .development-table { width: 100%; min-width: 0; border-collapse: collapse; font-size: 7pt; }
+            .matrix-code, .code-badge { display: inline-block; padding: 3px 5px; border-radius: 4px; color: #fff; font-weight: 700; }
+            .matrix-rating { text-align: center; font-weight: 800; }
+            .rating-na { color: #fff; background: #66727d; }
+            .rating-p { color: #fff; background: #e67e22; }
+            .rating-s { color: #fff; background: #238443; }
+            .rating-sp { color: #123b1d; background: #91d9a0; }
+            .rating-empty { color: #999; background: #f3f5f6; }
+            .development-empty { padding: 8px; border: 1px dashed #aaa; }
+            th, td { padding: 5px; border: 1px solid #bfcbd5; vertical-align: top; text-align: left; }
+            th { color: #12355b; background: #e8f2f9; }
+            .meta { margin-bottom: 7px; }
+            .meta th { width: 13%; }
+            .counts { display: flex; gap: 8px; margin: 7px 0; }
+            .counts span { padding: 5px 9px; border: 1px solid #d7e0e8; border-radius: 999px; }
+            .questions th:nth-child(1) { width: 18%; }
+            .questions th:nth-child(2) { width: 7%; }
+            .questions th:nth-child(3) { width: 43%; }
+            .questions th:nth-child(4) { width: 8%; }
+            .questions th:nth-child(5) { width: 24%; }
+            .rate { display: inline-block; min-width: 30px; padding: 3px 5px; border-radius: 5px; text-align: center; font-weight: 800; }
+            .rate-na { color: #fff; background: #66727d; }
+            .rate-p { color: #fff; background: #e67e22; }
+            .rate-s { color: #fff; background: #238443; }
+            .rate-sp { color: #123b1d; background: #91d9a0; }
+            @media print { .toolbar { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="toolbar"><button onclick="window.print()">Imprimer / Enregistrer en PDF</button></div>
+          <header>
+            <h1>Résumé des observations en accompagnement</h1>
+            <div>${store.observations.length} fiche(s) enregistrée(s) · ${aggregate.total} cotations</div>
+          </header>
+          <div class="global">
+            <div><b>${store.observations.length}</b>Observations</div>
+            <div><b>${aggregate.NA}</b>NA</div>
+            <div><b>${aggregate.P}</b>P</div>
+            <div><b>${aggregate.S}</b>S</div>
+            <div><b>${aggregate["S+"]}</b>S+</div>
+          </div>
+          ${observationsHtml}
+          <script>
+            window.addEventListener("load", () => setTimeout(() => window.print(), 450));
+          <\/script>
+        </body>
+        </html>`);
+      printWindow.document.close();
+      showToast("Choisissez « Enregistrer au format PDF » dans la fenêtre d’impression");
+    }
+
+    // Événements de la page d'accueil.
+    $("#newObservationBtn").addEventListener("click", startNewObservation);
+    $("#summaryPdfBtn").addEventListener("click", createSummaryPdf);
+
+    $("#observationList").addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const card = button.closest("[data-observation-id]");
+      const id = card?.dataset.observationId;
+      if (!id) return;
+      if (button.dataset.action === "open") {
+        store.activeObservationId = id;
+        saveStore();
+        goTo("observation");
+      }
+      if (button.dataset.action === "pdf") {
+        createObservationPdf(getObservation(id));
+      }
+    });
+
+    // Événements du constructeur.
+    $("#builderBackBtn").addEventListener("click", () => {
+      store.builderEditingObservationId = null;
+      saveStore();
+      goTo("home");
+    });
+
+    $$(".tab-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        store.builderMode = button.dataset.builderMode;
+        saveStore();
+        renderBuilder();
+        if (store.builderMode === "global") $("#globalQuestionSearch").focus();
+      });
+    });
+
+    $("#activityBuilderSearch").addEventListener("input", renderActivityBuilder);
+    $("#globalQuestionSearch").addEventListener("input", renderGlobalSearch);
+
+    $("#builderView").addEventListener("input", event => {
+      const textarea = event.target.closest("[data-builder-comment-question]");
+      if (!textarea) return;
+
+      const id = textarea.dataset.builderCommentQuestion;
+      builderNotes[id] = textarea.value;
+      store.builderNotes = { ...builderNotes };
+      saveStore();
+    });
+
+    $("#builderView").addEventListener("change", event => {
+      const questioningInput = event.target.closest("[data-builder-questioning-question]");
+      if (questioningInput) {
+        const id = questioningInput.dataset.builderQuestioningQuestion;
+        builderSelected.add(id);
+
+        const mainCheckbox = document.querySelector(`[data-question-choice="${id}"]`);
+        if (mainCheckbox) mainCheckbox.checked = true;
+
+        if (questioningInput.checked) {
+          builderQuestioning[id] = true;
+        } else {
+          delete builderQuestioning[id];
+        }
+
+        store.builderSelectedIds = [...builderSelected];
+        store.builderQuestioning = { ...builderQuestioning };
+        saveStore();
+        updateBuilderSummary();
+        return;
+      }
+
+      const ratingInput = event.target.closest("[data-builder-rating-question]");
+      if (ratingInput) {
+        const id = ratingInput.dataset.builderRatingQuestion;
+        builderSelected.add(id);
+        builderRatings[id] = ratingInput.value;
+
+        const checkbox = document.querySelector(`[data-question-choice="${id}"]`);
+        if (checkbox) checkbox.checked = true;
+
+        const card = ratingInput.closest("[data-builder-question-card]");
+        const existingLabel = card?.querySelector(".instant-rated");
+        if (existingLabel) {
+          existingLabel.textContent = `Cotée ${ratingInput.value}`;
+        } else {
+          card?.querySelector(".choice-text")?.insertAdjacentHTML(
+            "beforeend",
+            `<span class="instant-rated">Cotée ${escapeHtml(ratingInput.value)}</span>`
+          );
+        }
+
+        const commentField = card?.querySelector("[data-builder-comment-question]");
+        const observationText = card?.dataset.observationText || "";
+        if (commentField && !commentField.value.trim() && observationText) {
+          commentField.value = observationText;
+          builderNotes[id] = observationText;
+        }
+
+        store.builderSelectedIds = [...builderSelected];
+        store.builderRatings = { ...builderRatings };
+        store.builderNotes = { ...builderNotes };
+        store.builderQuestioning = { ...builderQuestioning };
+        saveStore();
+        updateBuilderSummary();
+        return;
+      }
+
+      const input = event.target.closest("[data-question-choice]");
+      if (!input) return;
+
+      const id = input.dataset.questionChoice;
+      const panel = document.querySelector(`[data-builder-rating-panel="${id}"]`);
+
+      if (input.checked) {
+        builderSelected.add(id);
+        panel?.classList.remove("hidden");
+        setTimeout(() => {
+          panel?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          panel?.querySelector('input[type="radio"]:checked, input[type="radio"]')?.focus();
+        }, 30);
+      } else {
+        builderSelected.delete(id);
+        delete builderRatings[id];
+        delete builderNotes[id];
+        delete builderQuestioning[id];
+        panel?.classList.add("hidden");
+        panel?.querySelectorAll('input[type="radio"]').forEach(radio => {
+          radio.checked = false;
+        });
+        input.closest("[data-builder-question-card]")?.querySelector(".instant-rated")?.remove();
+      }
+
+      store.builderSelectedIds = [...builderSelected];
+      store.builderRatings = { ...builderRatings };
+      store.builderNotes = { ...builderNotes };
+      saveStore();
+      updateBuilderSummary();
+    });
+
+    $("#builderView").addEventListener("click", event => {
+      const activityToggle = event.target.closest("[data-toggle-driving-activity]");
+      if (activityToggle) {
+        event.preventDefault();
+        const ids = (activityToggle.dataset.activityQuestionIds || "").split(",").filter(Boolean);
+        const allSelected = ids.length > 0 && ids.every(id => builderSelected.has(id));
+
+        ids.forEach(id => {
+          const checkbox = document.querySelector(`[data-question-choice="${id}"]`);
+          const panel = document.querySelector(`[data-builder-rating-panel="${id}"]`);
+          if (allSelected) {
+            builderSelected.delete(id);
+            delete builderRatings[id];
+            delete builderNotes[id];
+            delete builderQuestioning[id];
+            if (checkbox) checkbox.checked = false;
+            panel?.classList.add("hidden");
+            panel?.querySelectorAll('input[type="radio"]').forEach(radio => {
+              radio.checked = false;
+            });
+            const questioning = panel?.querySelector("[data-builder-questioning-question]");
+            if (questioning) questioning.checked = false;
+            checkbox?.closest("[data-builder-question-card]")?.querySelector(".instant-rated")?.remove();
+          } else {
+            builderSelected.add(id);
+            if (checkbox) checkbox.checked = true;
+            panel?.classList.remove("hidden");
+          }
+        });
+
+        store.builderSelectedIds = [...builderSelected];
+        store.builderRatings = { ...builderRatings };
+        store.builderQuestioning = { ...builderQuestioning };
+        saveStore();
+        updateBuilderSummary();
+        return;
+      }
+
+      const addButton = event.target.closest("[data-add-custom-observation]");
+      if (addButton) {
+        event.preventDefault();
+        addCustomObservation(addButton);
+        return;
+      }
+
+      const button = event.target.closest("[data-toggle-code]");
+      if (!button) return;
+
+      event.preventDefault();
+      const ids = (button.dataset.questionIds || "").split(",").filter(Boolean);
+      const allSelected = ids.length > 0 && ids.every(id => builderSelected.has(id));
+
+      ids.forEach(id => {
+        const checkbox = document.querySelector(`[data-question-choice="${id}"]`);
+        const panel = document.querySelector(`[data-builder-rating-panel="${id}"]`);
+        if (allSelected) {
+          builderSelected.delete(id);
+          delete builderRatings[id];
+          delete builderNotes[id];
+          delete builderQuestioning[id];
+          if (checkbox) checkbox.checked = false;
+          panel?.classList.add("hidden");
+          panel?.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.checked = false;
+          });
+          const questioning = panel?.querySelector("[data-builder-questioning-question]");
+          if (questioning) questioning.checked = false;
+          checkbox?.closest("[data-builder-question-card]")?.querySelector(".instant-rated")?.remove();
+        } else {
+          builderSelected.add(id);
+          if (checkbox) checkbox.checked = true;
+          panel?.classList.remove("hidden");
+        }
+      });
+
+      store.builderSelectedIds = [...builderSelected];
+      store.builderRatings = { ...builderRatings };
+      store.builderQuestioning = { ...builderQuestioning };
+      saveStore();
+      updateBuilderSummary();
+    });
+
+    $("#createObservationBtn").addEventListener("click", commitBuilder);
+
+    // Événements d'une observation.
+    $("#observationBackBtn").addEventListener("click", () => goTo("home"));
+
+    $("#observationSwitcher").addEventListener("change", event => {
+      store.activeObservationId = event.target.value;
+      observationFilter = { type: "all", value: "" };
+      saveStore();
+      renderObservation();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    ["obsDate", "observerName", "agentName", "mission"].forEach(field => {
+      document.getElementById(field).addEventListener("input", event => {
+        const obs = getObservation();
+        if (!obs || obs.status === "finalized") return;
+        obs.meta[field] = event.target.value;
+        touchObservation(obs);
+        const index = store.observations.indexOf(obs);
+        $("#activeObservationTitle").textContent = observationTitle(obs, index);
+      });
+    });
+
+    $("#developmentContainer").addEventListener("input", event => {
+      const row = event.target.closest("[data-development-key]");
+      if (!row) return;
+
+      const obs = getObservation();
+      if (!obs) return;
+
+      const key = row.dataset.developmentKey;
+      if (!obs.developmentActions) obs.developmentActions = {};
+      if (!obs.developmentActions[key]) {
+        obs.developmentActions[key] = { checked: true, action: "", dueDate: "" };
+      }
+
+      if (event.target.matches("[data-development-action]")) {
+        obs.developmentActions[key].action = event.target.value;
+      }
+      if (event.target.matches("[data-development-due]")) {
+        obs.developmentActions[key].dueDate = event.target.value;
+      }
+
+      obs.updatedAt = new Date().toISOString();
+      scheduleSave();
+    });
+
+    $("#developmentContainer").addEventListener("change", event => {
+      const checkbox = event.target.closest("[data-development-checked]");
+      if (!checkbox) return;
+
+      const row = checkbox.closest("[data-development-key]");
+      const obs = getObservation();
+      if (!row || !obs) return;
+
+      const key = row.dataset.developmentKey;
+      if (!obs.developmentActions) obs.developmentActions = {};
+      if (!obs.developmentActions[key]) {
+        obs.developmentActions[key] = { checked: true, action: "", dueDate: "" };
+      }
+
+      obs.developmentActions[key].checked = checkbox.checked;
+      obs.updatedAt = new Date().toISOString();
+      saveStore();
+    });
+
+    $("#currentPdfBtn").addEventListener("click", () => {
+      createObservationPdf(getObservation());
+    });
+
+    // Démarrage.
+    saveStore();
+    goTo("home");
+  </script>
+</body>
+</html>
