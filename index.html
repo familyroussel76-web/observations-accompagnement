@@ -1350,6 +1350,146 @@
       padding: 14px 18px 18px;
     }
 
+
+    .sw-update-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 4000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(8, 28, 47, .68);
+      backdrop-filter: blur(3px);
+    }
+    .sw-update-backdrop.hidden { display: none; }
+    .sw-update-modal {
+      width: min(470px, 100%);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(6, 28, 47, .34);
+    }
+    .sw-update-head {
+      padding: 18px;
+      color: #fff;
+      background: var(--navy);
+    }
+    .sw-update-head h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+    .sw-update-head p {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.82);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+    .sw-update-body {
+      padding: 17px 18px 4px;
+    }
+    .sw-update-body p {
+      margin: 0 0 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: .88rem;
+    }
+    .sw-update-safe {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      padding: 10px 11px;
+      border: 1px solid #cfe6d5;
+      border-radius: 10px;
+      color: #185b2d;
+      background: #f0faf3;
+      font-size: .8rem;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+    .sw-update-actions {
+      display: flex;
+      gap: 9px;
+      justify-content: flex-end;
+      padding: 14px 18px 18px;
+    }
+
+
+    .pdf-preview-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: flex;
+      flex-direction: column;
+      background: #eef2f5;
+    }
+    .pdf-preview-overlay.hidden { display: none; }
+    .pdf-preview-toolbar {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      padding-top: max(10px, env(safe-area-inset-top));
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 2px 10px rgba(0,0,0,.16);
+    }
+    .pdf-preview-title {
+      min-width: 0;
+      flex: 1;
+      font-size: .88rem;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pdf-preview-actions {
+      display: flex;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+    .pdf-preview-actions button {
+      min-height: 39px;
+      padding: 8px 11px;
+      border: 0;
+      border-radius: 9px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .pdf-preview-back {
+      color: var(--navy);
+      background: #fff;
+    }
+    .pdf-preview-print {
+      color: #fff;
+      background: var(--green);
+    }
+    .pdf-preview-frame {
+      display: block;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      border: 0;
+      background: #fff;
+    }
+    @media (max-width: 520px) {
+      .pdf-preview-toolbar {
+        align-items: stretch;
+        flex-wrap: wrap;
+      }
+      .pdf-preview-title {
+        width: 100%;
+        flex-basis: 100%;
+      }
+      .pdf-preview-actions {
+        width: 100%;
+      }
+      .pdf-preview-actions button {
+        flex: 1;
+      }
+    }
+
     @media (min-width: 680px) {
       main { padding: 22px 18px 112px; }
       .dashboard-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -1517,6 +1657,34 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <div id="pdfPreviewOverlay" class="pdf-preview-overlay hidden" aria-hidden="true">
+    <div class="pdf-preview-toolbar">
+      <div id="pdfPreviewTitle" class="pdf-preview-title">Aperçu PDF</div>
+      <div class="pdf-preview-actions">
+        <button id="pdfPreviewCloseBtn" class="pdf-preview-back" type="button">← Retour à l’application</button>
+        <button id="pdfPreviewPrintBtn" class="pdf-preview-print" type="button">Enregistrer en PDF</button>
+      </div>
+    </div>
+    <iframe id="pdfPreviewFrame" class="pdf-preview-frame" title="Aperçu du document PDF"></iframe>
+  </div>
+
+  <div id="swUpdateBackdrop" class="sw-update-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="swUpdateTitle">
+    <div class="sw-update-modal">
+      <div class="sw-update-head">
+        <h2 id="swUpdateTitle">Nouvelle version disponible</h2>
+        <p>Une mise à jour de l’application Observations est prête à être installée.</p>
+      </div>
+      <div class="sw-update-body">
+        <p>Appuyez sur le bouton ci-dessous. L’application va se mettre à jour puis redémarrer automatiquement.</p>
+        <div class="sw-update-safe">✓ Vos observations, cotations et commentaires enregistrés sur ce téléphone ne seront pas supprimés.</div>
+      </div>
+      <div class="sw-update-actions">
+        <button id="swUpdateLaterBtn" class="btn btn-ghost" type="button">Plus tard</button>
+        <button id="swUpdateNowBtn" class="btn btn-success" type="button">Mettre à jour maintenant</button>
+      </div>
+    </div>
+  </div>
+
   <div id="updateBackdrop" class="update-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="updateTitle">
     <div class="update-modal">
       <div class="update-modal-head">
@@ -1609,16 +1777,19 @@
 
     const STORAGE_KEY = "observations-accompagnement-v2";
     const LEGACY_KEY = "observations-accompagnement-v1";
-    const APP_VERSION = "12.0";
+    const APP_VERSION = "14.0";
     const APP_RELEASE_DATE = "11/09/2026";
     const LAST_SEEN_VERSION_KEY = "observations-accompagnement-last-seen-version";
     const UPDATE_NOTES = [
-      "Vous pouvez maintenant modifier une observation directement depuis l’historique.",
-      "Vous pouvez supprimer une observation enregistrée localement sur votre appareil.",
-      "La cotation P est affichée en orange.",
-      "Chaque cotation peut être identifiée comme réalisée par questionnement.",
-      "La synthèse des compétences et le développement des compétences sont générés automatiquement."
+      "L’aperçu PDF reste maintenant dans l’application : plus besoin de redémarrer après un export.",
+      "Un bouton « Retour à l’application » est disponible dans l’aperçu PDF.",
+      "Le bouton « Enregistrer en PDF » ouvre l’impression sans quitter l’application.",
+      "Le mécanisme de mise à jour automatique de la PWA est conservé.",
+      "Vos observations locales restent inchangées."
     ];
+    let waitingServiceWorker = null;
+    let serviceWorkerRefreshing = false;
+
 
     const QUESTION_BY_ID = new Map();
     const ACTIVITY_BY_ID = new Map();
@@ -1787,6 +1958,47 @@
       toast.classList.add("show");
       clearTimeout(showToast.timer);
       showToast.timer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+
+    function showServiceWorkerUpdate(worker) {
+      if (!worker) return;
+      waitingServiceWorker = worker;
+      $("#swUpdateBackdrop").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function hideServiceWorkerUpdate() {
+      $("#swUpdateBackdrop").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    async function checkForApplicationUpdate() {
+      if (!("serviceWorker" in navigator) || !location.protocol.startsWith("http")) return;
+
+      try {
+        const registration = await navigator.serviceWorker.getRegistration("./");
+        if (!registration) return;
+
+        if (registration.waiting) {
+          showServiceWorkerUpdate(registration.waiting);
+          return;
+        }
+
+        await registration.update();
+
+        if (registration.waiting) {
+          showServiceWorkerUpdate(registration.waiting);
+        }
+      } catch (error) {
+        console.warn("Vérification de mise à jour :", error);
+      }
+    }
+
+    function installWaitingServiceWorker() {
+      if (!waitingServiceWorker) return;
+      $("#swUpdateNowBtn").disabled = true;
+      $("#swUpdateNowBtn").textContent = "Mise à jour…";
+      waitingServiceWorker.postMessage({ type: "SKIP_WAITING" });
     }
 
     function showUpdatePopupIfNeeded() {
@@ -2985,6 +3197,45 @@
       showToast("Export CSV créé");
     }
 
+    function openPdfPreview(html, title = "Aperçu PDF") {
+      const overlay = $("#pdfPreviewOverlay");
+      const frame = $("#pdfPreviewFrame");
+
+      $("#pdfPreviewTitle").textContent = title;
+      frame.srcdoc = html;
+      overlay.classList.remove("hidden");
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closePdfPreview() {
+      const overlay = $("#pdfPreviewOverlay");
+      const frame = $("#pdfPreviewFrame");
+
+      overlay.classList.add("hidden");
+      overlay.setAttribute("aria-hidden", "true");
+      frame.srcdoc = "";
+      document.body.style.overflow = "";
+    }
+
+    function printPdfPreview() {
+      const frame = $("#pdfPreviewFrame");
+      const printWindow = frame.contentWindow;
+
+      if (!printWindow) {
+        showToast("Impossible d’ouvrir l’impression");
+        return;
+      }
+
+      try {
+        printWindow.focus();
+        printWindow.print();
+      } catch (error) {
+        console.warn("Impression PDF :", error);
+        showToast("Impossible d’ouvrir l’impression");
+      }
+    }
+
     function createObservationPdf(obs) {
       if (!obs) return;
 
@@ -3014,14 +3265,7 @@
           </tr>`;
       }).join("");
 
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        showToast("Le navigateur a bloqué la fenêtre du PDF");
-        return;
-      }
-
-      printWindow.document.open();
-      printWindow.document.write(`<!DOCTYPE html>
+      const printableHtml = `<!DOCTYPE html>
         <html lang="fr">
         <head>
           <meta charset="UTF-8">
@@ -3075,7 +3319,6 @@
           </style>
         </head>
         <body>
-          <div class="toolbar"><button onclick="window.print()">Enregistrer en PDF</button></div>
           <h1>${escapeHtml(observationTitle(obs, index))}</h1>
           <table class="meta">
             <tr><th>Date</th><td>${escapeHtml(obs.meta?.obsDate || "")}</td><th>Observateur</th><td>${escapeHtml(obs.meta?.observerName || "")}</td></tr>
@@ -3099,14 +3342,10 @@
             <thead><tr><th>Activité</th><th>Compétence</th><th>Observation</th><th>Cotation</th><th>Questionnement</th><th>Note</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
-          <script>
-            window.addEventListener("load", () => setTimeout(() => window.print(), 350));
-          <\/script>
-        </body>
-        </html>`);
-
-      printWindow.document.close();
-      showToast("Choisissez « Enregistrer au format PDF »");
+          </body>
+        </html>`;
+      openPdfPreview(printableHtml, observationTitle(obs, index));
+      showToast("Aperçu PDF ouvert");
     }
 
     function createSummaryPdf() {
@@ -3166,14 +3405,7 @@
           </section>`;
       }).join("");
 
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        showToast("Le navigateur a bloqué la fenêtre du PDF");
-        return;
-      }
-
-      printWindow.document.open();
-      printWindow.document.write(`<!DOCTYPE html>
+      const printableHtml = `<!DOCTYPE html>
         <html lang="fr">
         <head>
           <meta charset="UTF-8">
@@ -3225,7 +3457,6 @@
           </style>
         </head>
         <body>
-          <div class="toolbar"><button onclick="window.print()">Imprimer / Enregistrer en PDF</button></div>
           <header>
             <h1>Résumé des observations en accompagnement</h1>
             <div>${store.observations.length} fiche(s) enregistrée(s) · ${aggregate.total} cotations</div>
@@ -3238,13 +3469,10 @@
             <div><b>${aggregate["S+"]}</b>S+</div>
           </div>
           ${observationsHtml}
-          <script>
-            window.addEventListener("load", () => setTimeout(() => window.print(), 450));
-          <\/script>
-        </body>
-        </html>`);
-      printWindow.document.close();
-      showToast("Choisissez « Enregistrer au format PDF » dans la fenêtre d’impression");
+          </body>
+        </html>`;
+      openPdfPreview(printableHtml, "Résumé des observations");
+      showToast("Aperçu PDF ouvert");
     }
 
     // Événements de la page d'accueil.
@@ -3555,23 +3783,71 @@
     });
 
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && !$("#updateBackdrop").classList.contains("hidden")) {
+      if (event.key !== "Escape") return;
+
+      if (!$("#pdfPreviewOverlay").classList.contains("hidden")) {
+        closePdfPreview();
+        return;
+      }
+
+      if (!$("#updateBackdrop").classList.contains("hidden")) {
         closeUpdatePopup();
       }
+    });
+
+    $("#pdfPreviewCloseBtn").addEventListener("click", closePdfPreview);
+    $("#pdfPreviewPrintBtn").addEventListener("click", printPdfPreview);
+
+    $("#swUpdateNowBtn").addEventListener("click", installWaitingServiceWorker);
+    $("#swUpdateLaterBtn").addEventListener("click", hideServiceWorkerUpdate);
+
+    navigator.serviceWorker?.addEventListener("controllerchange", () => {
+      if (serviceWorkerRefreshing) return;
+      serviceWorkerRefreshing = true;
+      window.location.reload();
     });
 
     // Démarrage.
     saveStore();
     goTo("home");
     setTimeout(showUpdatePopupIfNeeded, 180);
+    setTimeout(checkForApplicationUpdate, 900);
+
+    // Vérifie aussi si l’application reste ouverte longtemps.
+    setInterval(checkForApplicationUpdate, 60 * 60 * 1000);
   </script>
 
   <script>
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(error => {
+      window.addEventListener("load", async () => {
+        try {
+          const registration = await navigator.serviceWorker.register("./service-worker.js", {
+            updateViaCache: "none"
+          });
+
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            if (typeof showServiceWorkerUpdate === "function") {
+              showServiceWorkerUpdate(registration.waiting);
+            }
+          }
+
+          registration.addEventListener("updatefound", () => {
+            const worker = registration.installing;
+            if (!worker) return;
+
+            worker.addEventListener("statechange", () => {
+              if (worker.state === "installed" && navigator.serviceWorker.controller) {
+                if (typeof showServiceWorkerUpdate === "function") {
+                  showServiceWorkerUpdate(worker);
+                }
+              }
+            });
+          });
+
+          registration.update().catch(() => {});
+        } catch (error) {
           console.warn("Service worker :", error);
-        });
+        }
       });
     }
   </script>
