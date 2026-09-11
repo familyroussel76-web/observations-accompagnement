@@ -1,7 +1,8 @@
 {
+  "id": "./",
   "name": "Observations en accompagnement",
   "short_name": "Observations",
-  "description": "Observations, cotations CT/CNT, synthèse et PDF.",
+  "description": "Observations, cotations CT/CNT, synthèse et export PDF.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,21 +10,22 @@
   "background_color": "#f3f6f9",
   "theme_color": "#12355b",
   "lang": "fr-FR",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon-maskable-512.png",
+      "src": "./icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
