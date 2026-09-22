@@ -1511,6 +1511,82 @@
       .panel, .question-card { box-shadow: none; }
       .activity-section-header { position: static; color: #111; background: #e8eef3; box-shadow: none; }
     }
+
+
+    /* v16 — priorités photo, base agents et accès direct au choix de l'agent */
+    .priority-card { margin-top: 14px; }
+    .priority-card-head { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
+    .priority-card-head h2 { margin:0 0 5px; font-size:1.05rem; }
+    .priority-card-head p { margin:0; color:var(--muted); font-size:.82rem; line-height:1.4; }
+    .priority-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .priority-photo-workspace { margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+    .priority-photo-preview { width:100%; max-height:310px; object-fit:contain; border-radius:14px; background:#f2f5f7; border:1px solid var(--line); }
+    .priority-analysis-toolbar { display:flex; gap:8px; align-items:end; flex-wrap:wrap; margin-top:10px; }
+    .priority-analysis-toolbar .field { min-width:130px; flex:0 0 auto; }
+    .priority-detection-note { margin-top:8px; color:var(--muted); font-size:.76rem; line-height:1.35; }
+    .priority-columns { display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px; }
+    .priority-name-setup { margin-top:12px; padding:12px; border:1px solid var(--line); border-radius:14px; background:#f8fafb; }
+    .priority-name-setup-head { margin-bottom:8px; }
+    .priority-name-setup-head strong { display:block; font-size:.9rem; }
+    .priority-name-setup-head span { display:block; margin-top:3px; color:var(--muted); font-size:.76rem; line-height:1.35; }
+    .priority-name-setup-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .priority-agent-known { display:inline-flex; align-items:center; gap:5px; margin-top:7px; padding:4px 7px; border-radius:999px; background:#e2f3e7; color:#246536; font-size:.7rem; font-weight:850; }
+    .priority-column-card { border:1px solid var(--line); border-radius:14px; padding:11px; background:#fff; }
+    .priority-column-title { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+    .priority-column-title strong { font-size:.9rem; }
+    .priority-counts { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+    .priority-chip { display:inline-flex; align-items:center; gap:5px; border-radius:999px; padding:4px 8px; font-size:.72rem; font-weight:850; border:1px solid transparent; }
+    .priority-chip.red { color:#851d1d; background:#ffe1e1; border-color:#ffc1c1; }
+    .priority-chip.yellow { color:#705400; background:#fff3bf; border-color:#ffe07a; }
+    .priority-chip.green { color:#1d6333; background:#dff4e4; border-color:#bce5c6; }
+    .priority-chip.unknown { color:#59636c; background:#edf1f4; border-color:#d8dfe4; }
+    .priority-current { margin-top:10px; padding:10px 12px; border-radius:12px; background:#f5f8fa; border:1px solid var(--line); }
+    .priority-current strong { display:block; }
+    .priority-current > span { display:block; color:var(--muted); font-size:.76rem; margin-top:3px; }
+    .priority-current-actions { margin-top:8px; display:flex; gap:7px; flex-wrap:wrap; }
+
+    .driving-activity.priority-red { border-color:#e35b5b; box-shadow:0 0 0 1px rgba(227,91,91,.08); }
+    .driving-activity.priority-red > summary { background:linear-gradient(90deg,#fff0f0 0%,#fff 60%); }
+    .driving-activity.priority-yellow { border-color:#e0ba3e; }
+    .driving-activity.priority-yellow > summary { background:linear-gradient(90deg,#fff8d7 0%,#fff 60%); }
+    .driving-activity.priority-green { opacity:.78; }
+    .activity-priority-badge { flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; border-radius:999px; padding:4px 7px; font-size:.68rem; font-weight:900; white-space:nowrap; }
+    .activity-priority-badge.red { color:#8b1f1f; background:#ffdede; }
+    .activity-priority-badge.yellow { color:#705400; background:#fff0ad; }
+    .activity-priority-badge.green { color:#246536; background:#dff2e4; }
+
+    .priority-modal-backdrop { position:fixed; inset:0; z-index:9998; background:rgba(18,26,32,.56); display:flex; align-items:flex-end; justify-content:center; padding:14px; }
+    .priority-modal-backdrop.hidden { display:none; }
+    .priority-modal { width:min(680px,100%); max-height:86vh; overflow:auto; background:#fff; border-radius:20px 20px 14px 14px; box-shadow:0 18px 60px rgba(0,0,0,.28); padding:16px; }
+    .priority-modal h2 { margin:0; font-size:1.08rem; }
+    .priority-modal > p { margin:6px 0 12px; color:var(--muted); font-size:.82rem; line-height:1.4; }
+    .priority-summary-list { display:grid; gap:8px; }
+    .priority-summary-row { border:1px solid var(--line); border-radius:13px; padding:10px; }
+    .priority-summary-row.red { border-left:5px solid #d94444; background:#fff6f6; }
+    .priority-summary-row.yellow { border-left:5px solid #d5a91f; background:#fffdf1; }
+    .priority-summary-row.green { border-left:5px solid #53a663; background:#f7fbf8; }
+    .priority-summary-row.neutral { border-left:5px solid #a7b1b8; }
+    .priority-summary-row strong { display:block; font-size:.86rem; line-height:1.3; }
+    .priority-summary-meta { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; }
+    .competency-pill { display:inline-flex; border-radius:999px; padding:4px 7px; font-size:.7rem; font-weight:850; background:#edf3f7; color:#294456; }
+    .competency-pill.missing { background:#ffe0e0; color:#922323; }
+    .priority-modal-warning { margin-top:10px; padding:9px 10px; border-radius:11px; background:#fff1d7; color:#775000; font-size:.78rem; font-weight:750; line-height:1.35; }
+    .priority-modal-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-top:14px; }
+    .agent-choice-list { display:grid; gap:9px; margin-top:10px; }
+    .agent-choice-row { border:1px solid var(--line); border-radius:14px; padding:11px; background:#fff; }
+    .agent-choice-row.active { border-color:#5d7f95; box-shadow:0 0 0 2px rgba(93,127,149,.10); }
+    .agent-choice-head { display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
+    .agent-choice-head strong { display:block; font-size:.9rem; }
+    .agent-choice-head span { display:block; margin-top:2px; color:var(--muted); font-size:.75rem; }
+    .agent-choice-missing { margin-top:7px; color:#8a5b00; font-size:.75rem; font-weight:700; }
+    .agent-choice-actions { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+
+    @media (min-width:720px) {
+      .priority-columns { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .priority-modal-backdrop { align-items:center; }
+      .priority-modal { border-radius:20px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1519,7 +1595,7 @@
       <div class="logo">OA</div>
       <div class="header-copy">
         <h1>Observations en accompagnement</h1>
-        <p>Choix ciblé des compétences, cotation et synthèse multi-observations</p>
+        <p>Choix ciblé des compétences, priorités photo, cotation et synthèse multi-observations</p>
       </div>
     </div>
   </header>
@@ -1543,6 +1619,47 @@
       <div class="home-actions">
         <button id="newObservationBtn" class="btn btn-primary btn-wide" type="button">＋ Nouvelle observation</button>
         <button id="summaryPdfBtn" class="btn btn-success btn-wide" type="button">PDF de toutes les fiches</button>
+      </div>
+
+
+
+      <div id="priorityPhotoCard" class="panel priority-card">
+        <div class="priority-card-head">
+          <div>
+            <h2>Priorités de cotation <span style="font-weight:700;color:var(--muted)">(facultatif)</span></h2>
+            <p>Ajoutez une photo du tableau de suivi. L'application lit hors ligne les couleurs rouge / jaune / vert et marque ensuite les activités à traiter.</p>
+          </div>
+        </div>
+        <div id="priorityCurrent"></div>
+        <div class="priority-actions">
+          <button id="priorityCameraBtn" class="btn btn-primary btn-small" type="button">📷 Prendre une photo</button>
+          <button id="priorityFileBtn" class="btn btn-secondary btn-small" type="button">🖼️ Importer une photo</button>
+        </div>
+        <input id="priorityCameraInput" type="file" accept="image/*" capture="environment" hidden>
+        <input id="priorityFileInput" type="file" accept="image/*" hidden>
+
+        <div id="priorityPhotoWorkspace" class="priority-photo-workspace hidden">
+          <img id="priorityPhotoPreview" class="priority-photo-preview" alt="Photo du tableau de suivi">
+          <canvas id="priorityPhotoCanvas" hidden></canvas>
+          <div class="priority-analysis-toolbar">
+            <button id="priorityAnalyzeBtn" class="btn btn-primary btn-small" type="button">Relancer l’analyse</button>
+            <div class="field">
+              <label for="priorityColumnCount">Nombre d'agents</label>
+              <input id="priorityColumnCount" type="number" min="1" max="12" value="4">
+            </div>
+          </div>
+          <div id="priorityDetectionNote" class="priority-detection-note"></div>
+          <div id="priorityNameSetup" class="priority-name-setup hidden">
+            <div class="priority-name-setup-head">
+              <strong>Associer les agents détectés</strong>
+              <span>Cette étape n’apparaît que lorsqu’un agent n’est pas encore connu. Renseignez son nom une seule fois : il sera mémorisé sur cet appareil.</span>
+            </div>
+            <div id="priorityColumns" class="priority-columns"></div>
+            <div class="priority-name-setup-actions">
+              <button id="priorityValidateNamesBtn" class="btn btn-primary" type="button">Valider les noms</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="panel">
@@ -1652,6 +1769,34 @@
         <span id="builderCodeSummary">Aucune compétence sélectionnée</span>
       </div>
       <button id="createObservationBtn" class="btn btn-primary" type="button" disabled>Voir la fiche résumé</button>
+    </div>
+  </div>
+
+
+
+  <div id="priorityAgentChoiceModal" class="priority-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="priorityAgentChoiceTitle">
+    <div class="priority-modal">
+      <h2 id="priorityAgentChoiceTitle">Quel agent allez-vous coter ?</h2>
+      <p>Sélectionnez l’agent concerné par cette séquence. Le choix est facultatif : sélectionner un agent charge uniquement les priorités rouge / jaune de sa colonne.</p>
+      <div id="priorityAgentChoiceList" class="agent-choice-list"></div>
+      <div class="priority-modal-actions">
+        <button id="priorityAgentChoiceCancel" class="btn btn-ghost" type="button">Annuler</button>
+        <button id="priorityAgentChoiceManage" class="btn btn-ghost" type="button">Corriger les agents</button>
+        <button id="priorityAgentChoiceSkip" class="btn btn-secondary" type="button">Continuer sans priorités</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="prioritySummaryModal" class="priority-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="prioritySummaryTitle">
+    <div class="priority-modal">
+      <h2 id="prioritySummaryTitle">Résumé de la séquence</h2>
+      <p id="prioritySummaryIntro"></p>
+      <div id="prioritySummaryList" class="priority-summary-list"></div>
+      <div id="prioritySummaryWarning" class="priority-modal-warning hidden"></div>
+      <div class="priority-modal-actions">
+        <button id="prioritySummaryCancel" class="btn btn-ghost" type="button">Modifier la sélection</button>
+        <button id="prioritySummaryConfirm" class="btn btn-primary" type="button">Continuer vers la fiche</button>
+      </div>
     </div>
   </div>
 
@@ -1777,15 +1922,16 @@
 
     const STORAGE_KEY = "observations-accompagnement-v2";
     const LEGACY_KEY = "observations-accompagnement-v1";
-    const APP_VERSION = "14.0";
-    const APP_RELEASE_DATE = "11/09/2026";
+    const APP_VERSION = "16.0";
+    const APP_RELEASE_DATE = "22/09/2026";
     const LAST_SEEN_VERSION_KEY = "observations-accompagnement-last-seen-version";
     const UPDATE_NOTES = [
-      "L’aperçu PDF reste maintenant dans l’application : plus besoin de redémarrer après un export.",
-      "Un bouton « Retour à l’application » est disponible dans l’aperçu PDF.",
-      "Le bouton « Enregistrer en PDF » ouvre l’impression sans quitter l’application.",
-      "Le mécanisme de mise à jour automatique de la PWA est conservé.",
-      "Vos observations locales restent inchangées."
+      "Après import d’une photo, l’analyse des couleurs se lance automatiquement.",
+      "Les abréviations d’agents sont préremplies lorsqu’elles peuvent être reconnues ou qu’un même tableau a déjà été renseigné.",
+      "L’association abréviation → nom complet n’est demandée que pour les agents encore inconnus, puis elle est mémorisée localement.",
+      "Lorsque tous les agents sont connus, l’application ouvre directement le choix de l’agent à coter.",
+      "Le choix reste facultatif : vous pouvez continuer sans priorités issues de la photo.",
+      "Les activités prioritaires rouge / jaune restent liées uniquement à la colonne de l’agent choisi."
     ];
     let waitingServiceWorker = null;
     let serviceWorkerRefreshing = false;
@@ -1868,6 +2014,511 @@
       return compact ? `competency-${compact}` : "";
     }
 
+    const AGENT_ALIAS_KEY = "oa-agent-aliases-v1";
+    const AGENT_LAYOUT_KEY = "oa-agent-column-layout-v1";
+    const PRIORITY_ROWS = ACTIVITIES.filter(activity => activity.id !== "custom-activity").slice(0, 15);
+    let priorityPhotoImage = null;
+    let priorityDetectedBox = null;
+    let priorityAnalysis = null;
+    let priorityPhotoObjectUrl = "";
+
+    function normalizeAgentCode(value) {
+      return String(value || "").trim().replace(/\s+/g, " ").toUpperCase();
+    }
+
+    function loadAgentAliases() {
+      let aliases = {};
+      try { aliases = JSON.parse(safeStorageGet(AGENT_ALIAS_KEY) || "{}") || {}; }
+      catch (error) { aliases = {}; }
+      return aliases;
+    }
+
+    function loadAgentLayouts() {
+      let layouts = {};
+      try { layouts = JSON.parse(safeStorageGet(AGENT_LAYOUT_KEY) || "{}") || {}; }
+      catch (error) { layouts = {}; }
+      return layouts;
+    }
+
+    let agentAliases = loadAgentAliases();
+    let agentLayouts = loadAgentLayouts();
+
+    function getAgentFullName(code) {
+      return agentAliases[normalizeAgentCode(code)] || "";
+    }
+
+    function rememberAgent(code, fullName) {
+      const key = normalizeAgentCode(code);
+      const name = String(fullName || "").trim();
+      if (!key || !name) return false;
+      agentAliases[key] = name;
+      safeStorageSet(AGENT_ALIAS_KEY, JSON.stringify(agentAliases));
+      return true;
+    }
+
+    function getRememberedAgentLayout(columnCount) {
+      const layout = agentLayouts[String(columnCount)];
+      return Array.isArray(layout) ? layout.map(normalizeAgentCode) : [];
+    }
+
+    function rememberAgentLayout(codes) {
+      const normalized = (codes || []).map(normalizeAgentCode);
+      if (!normalized.length || normalized.some(code => !code)) return false;
+      agentLayouts[String(normalized.length)] = normalized;
+      safeStorageSet(AGENT_LAYOUT_KEY, JSON.stringify(agentLayouts));
+      return true;
+    }
+
+    function extractAgentCodeCandidate(text) {
+      const clean = String(text || "")
+        .replace(/[\n\r\t]+/g, " ")
+        .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ ]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!clean) return "";
+      const words = clean.split(" ").filter(Boolean);
+      const blocked = new Set(["TABLEAUX", "BORD", "ACTIVITES", "ACTIVITÉS", "CONDUITE", "TAUX", "AVANCEMENT", "COLONNE"]);
+      let best = "";
+      let bestScore = -1;
+      for (let i = 0; i < words.length - 1; i += 1) {
+        const a = words[i];
+        const b = words[i + 1];
+        const au = a.toUpperCase();
+        const bu = b.toUpperCase();
+        if (blocked.has(au) || blocked.has(bu)) continue;
+        if (a.length < 2 || a.length > 5 || b.length < 2 || b.length > 8) continue;
+        if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]+$/.test(a) || !/^[A-Za-zÀ-ÖØ-öø-ÿ]+$/.test(b)) continue;
+        let score = 0;
+        if (a === au) score += 4;
+        if (a.length === 3) score += 3;
+        if (b.length >= 3 && b.length <= 5) score += 2;
+        if (/^[A-ZÀ-ÖØ-Ý]/.test(b)) score += 1;
+        if (score > bestScore) {
+          bestScore = score;
+          best = normalizeAgentCode(`${a} ${b}`);
+        }
+      }
+      return bestScore >= 4 ? best : "";
+    }
+
+    async function detectAgentCodesFromHeader(box, columnCount) {
+      const empty = new Array(columnCount).fill("");
+      if (!("TextDetector" in window) || !box || !columnCount) return empty;
+      try {
+        const source = $("#priorityPhotoCanvas");
+        const detector = new TextDetector();
+        const cellW = (box.x1 - box.x0) / columnCount;
+        const gridH = box.y1 - box.y0;
+        const headerH = Math.max(48, Math.min(150, Math.round(gridH * .28)));
+        const top = Math.max(0, Math.round(box.y0 - headerH));
+        const bottom = Math.min(source.height, Math.round(box.y0 + 8));
+        const cropH = Math.max(1, bottom - top);
+        const results = [];
+        for (let col = 0; col < columnCount; col += 1) {
+          const left = Math.max(0, Math.round(box.x0 + col * cellW - 6));
+          const right = Math.min(source.width, Math.round(box.x0 + (col + 1) * cellW + 6));
+          const crop = document.createElement("canvas");
+          crop.width = Math.max(1, right - left);
+          crop.height = cropH;
+          const cctx = crop.getContext("2d");
+          cctx.drawImage(source, left, top, crop.width, crop.height, 0, 0, crop.width, crop.height);
+          const found = await detector.detect(crop);
+          const raw = (found || []).map(item => item.rawValue || "").join(" ");
+          results.push(extractAgentCodeCandidate(raw));
+        }
+        return results;
+      } catch (error) {
+        console.warn("Lecture automatique des noms indisponible", error);
+        return empty;
+      }
+    }
+
+    function priorityLabel(status) {
+      if (status === "red") return { text: "Priorité 0/2", short: "0/2", className: "red" };
+      if (status === "yellow") return { text: "À compléter 1/2", short: "1/2", className: "yellow" };
+      if (status === "green") return { text: "Validée 2/2", short: "2/2", className: "green" };
+      return { text: "Non lu", short: "?", className: "unknown" };
+    }
+
+    function activityPriorityStatus(activityId) {
+      return store?.priorityContext?.statuses?.[activityId] || "";
+    }
+
+    function renderPriorityCurrent() {
+      const target = $("#priorityCurrent");
+      if (!target) return;
+      const ctx = store.priorityContext;
+      if (!ctx || !ctx.agentName) {
+        target.innerHTML = "";
+        return;
+      }
+      const values = Object.values(ctx.statuses || {});
+      const red = values.filter(v => v === "red").length;
+      const yellow = values.filter(v => v === "yellow").length;
+      const green = values.filter(v => v === "green").length;
+      target.innerHTML = `
+        <div class="priority-current">
+          <strong>${escapeHtml(ctx.agentName)}${ctx.agentCode ? ` · ${escapeHtml(ctx.agentCode)}` : ""}</strong>
+          <span>Priorités actives pour la prochaine séquence</span>
+          <div class="priority-counts">
+            <span class="priority-chip red">🔴 ${red} à faire</span>
+            <span class="priority-chip yellow">🟡 ${yellow} à compléter</span>
+            <span class="priority-chip green">🟢 ${green} validée${green > 1 ? "s" : ""}</span>
+          </div>
+          <div class="priority-current-actions">
+            <button class="btn btn-ghost btn-small" type="button" data-clear-priority>Effacer ces priorités</button>
+          </div>
+        </div>`;
+    }
+
+    function classifyPriorityPixel(r, g, b) {
+      if (r < 45 && g < 45 && b < 45) return "";
+      if (r > g * 1.55 && r > b * 1.45 && r > 85) return "red";
+      if (r > 75 && g > 65 && b < Math.min(r, g) * 0.78 && r >= g * .98 && r <= g * 1.48) return "yellow";
+      if (g > r * 1.12 && g > b * 1.28 && g > 70) return "green";
+      return "";
+    }
+
+    function largestRun(counts, threshold) {
+      let best = null;
+      let start = null;
+      let score = 0;
+      for (let i = 0; i <= counts.length; i += 1) {
+        const ok = i < counts.length && counts[i] >= threshold;
+        if (ok) {
+          if (start === null) { start = i; score = 0; }
+          score += counts[i];
+        } else if (start !== null) {
+          const end = i - 1;
+          const candidate = { start, end, length: end - start + 1, score };
+          if (!best || candidate.length > best.length || (candidate.length === best.length && candidate.score > best.score)) best = candidate;
+          start = null;
+          score = 0;
+        }
+      }
+      return best;
+    }
+
+    function preparePriorityCanvas(image) {
+      const canvas = $("#priorityPhotoCanvas");
+      const maxWidth = 1200;
+      const scale = Math.min(1, maxWidth / image.naturalWidth);
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      return { canvas, ctx };
+    }
+
+    function detectPriorityGrid() {
+      if (!priorityPhotoImage) return null;
+      const { canvas, ctx } = preparePriorityCanvas(priorityPhotoImage);
+      const { width, height } = canvas;
+      const data = ctx.getImageData(0, 0, width, height).data;
+      const rowCounts = new Array(height).fill(0);
+      const stride = width > 900 ? 2 : 1;
+
+      for (let y = 0; y < height; y += 1) {
+        let count = 0;
+        for (let x = 0; x < width; x += stride) {
+          const i = (y * width + x) * 4;
+          if (classifyPriorityPixel(data[i], data[i + 1], data[i + 2])) count += stride;
+        }
+        rowCounts[y] = count;
+      }
+
+      const maxRow = Math.max(...rowCounts);
+      if (!maxRow || maxRow < width * .12) return null;
+      let yRun = largestRun(rowCounts, Math.max(12, maxRow * .24));
+      if (!yRun || yRun.length < 80) yRun = largestRun(rowCounts, Math.max(8, maxRow * .14));
+      if (!yRun) return null;
+
+      const colCounts = new Array(width).fill(0);
+      for (let x = 0; x < width; x += 1) {
+        let count = 0;
+        for (let y = yRun.start; y <= yRun.end; y += 2) {
+          const i = (y * width + x) * 4;
+          if (classifyPriorityPixel(data[i], data[i + 1], data[i + 2])) count += 2;
+        }
+        colCounts[x] = count;
+      }
+      const maxCol = Math.max(...colCounts);
+      let xRun = largestRun(colCounts, Math.max(10, maxCol * .24));
+      if (!xRun) xRun = largestRun(colCounts, Math.max(6, maxCol * .14));
+      if (!xRun) return null;
+
+      const box = { x0: xRun.start, x1: xRun.end + 1, y0: yRun.start, y1: yRun.end + 1, width, height };
+      const rowHeight = (box.y1 - box.y0) / PRIORITY_ROWS.length;
+      const guessedColumns = Math.max(1, Math.min(12, Math.round((box.x1 - box.x0) / Math.max(1, rowHeight * 5.7))));
+      return { box, guessedColumns, data, width, height };
+    }
+
+    function readPriorityCells(box, columnCount) {
+      const canvas = $("#priorityPhotoCanvas");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const statuses = [];
+      const rows = PRIORITY_ROWS.length;
+      const cellW = (box.x1 - box.x0) / columnCount;
+      const cellH = (box.y1 - box.y0) / rows;
+
+      for (let col = 0; col < columnCount; col += 1) {
+        const column = [];
+        for (let row = 0; row < rows; row += 1) {
+          const x0 = Math.round(box.x0 + (col + .18) * cellW);
+          const x1 = Math.round(box.x0 + (col + .82) * cellW);
+          const y0 = Math.round(box.y0 + (row + .20) * cellH);
+          const y1 = Math.round(box.y0 + (row + .80) * cellH);
+          const counts = { red: 0, yellow: 0, green: 0 };
+          for (let y = y0; y < y1; y += 2) {
+            for (let x = x0; x < x1; x += 2) {
+              const i = (y * canvas.width + x) * 4;
+              const kind = classifyPriorityPixel(imageData[i], imageData[i + 1], imageData[i + 2]);
+              if (kind) counts[kind] += 1;
+            }
+          }
+          const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+          column.push(best && best[1] > 2 ? best[0] : "unknown");
+        }
+        statuses.push(column);
+      }
+      return statuses;
+    }
+
+    function priorityColumnCounts(columnStatuses) {
+      return {
+        red: columnStatuses.filter(v => v === "red").length,
+        yellow: columnStatuses.filter(v => v === "yellow").length,
+        green: columnStatuses.filter(v => v === "green").length,
+        unknown: columnStatuses.filter(v => v === "unknown").length
+      };
+    }
+
+    function priorityAgentsAreKnown() {
+      if (!priorityAnalysis?.statuses?.length) return false;
+      const codes = priorityAnalysis.codes || [];
+      return priorityAnalysis.statuses.every((_, index) => {
+        const code = normalizeAgentCode(codes[index] || "");
+        return Boolean(code && getAgentFullName(code));
+      });
+    }
+
+    function renderPriorityColumns() {
+      const container = $("#priorityColumns");
+      if (!container || !priorityAnalysis) return;
+      const codes = priorityAnalysis.codes || [];
+      container.innerHTML = priorityAnalysis.statuses.map((columnStatuses, index) => {
+        const counts = priorityColumnCounts(columnStatuses);
+        const code = normalizeAgentCode(codes[index] || "");
+        const fullName = getAgentFullName(code);
+        return `
+          <div class="priority-column-card" data-priority-column="${index}">
+            <div class="priority-column-title"><strong>Colonne ${index + 1}</strong><span>${PRIORITY_ROWS.length} activités</span></div>
+            <div class="field">
+              <label>Abréviation lue sur le tableau</label>
+              <input type="text" data-agent-code value="${escapeHtml(code)}" placeholder="Ex. MAR ROB" autocomplete="off">
+            </div>
+            <div class="field" style="margin-top:8px">
+              <label>Nom complet</label>
+              <input type="text" data-agent-full-name value="${escapeHtml(fullName)}" placeholder="Ex. MARTIN Robert" autocomplete="off">
+            </div>
+            ${fullName ? `<span class="priority-agent-known">✓ Agent déjà mémorisé</span>` : ""}
+            <div class="priority-counts">
+              <span class="priority-chip red">🔴 ${counts.red}</span>
+              <span class="priority-chip yellow">🟡 ${counts.yellow}</span>
+              <span class="priority-chip green">🟢 ${counts.green}</span>
+              ${counts.unknown ? `<span class="priority-chip unknown">? ${counts.unknown}</span>` : ""}
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function showPriorityNameSetup(force = false) {
+      if (!priorityAnalysis) return;
+      if (!force && priorityAgentsAreKnown()) {
+        $("#priorityNameSetup").classList.add("hidden");
+        return;
+      }
+      renderPriorityColumns();
+      $("#priorityNameSetup").classList.remove("hidden");
+    }
+
+    function openPriorityAgentChoice() {
+      if (!priorityAnalysis?.statuses?.length) return;
+      renderPriorityAgentChoice();
+      $("#priorityAgentChoiceModal").classList.remove("hidden");
+    }
+
+    function mergeDetectedAndRememberedCodes(detectedCodes, columnCount) {
+      const remembered = getRememberedAgentLayout(columnCount);
+      return new Array(columnCount).fill("").map((_, index) => {
+        return normalizeAgentCode(detectedCodes?.[index] || remembered[index] || "");
+      });
+    }
+
+    async function finalizePriorityAnalysis({ openChoice = false } = {}) {
+      const count = priorityAnalysis?.columnCount || 0;
+      if (!count) return;
+      $("#priorityDetectionNote").textContent = "Lecture des agents…";
+      const detectedCodes = await detectAgentCodesFromHeader(priorityDetectedBox, count);
+      priorityAnalysis.codes = mergeDetectedAndRememberedCodes(detectedCodes, count);
+
+      if (priorityAgentsAreKnown()) {
+        rememberAgentLayout(priorityAnalysis.codes);
+        $("#priorityNameSetup").classList.add("hidden");
+        $("#priorityDetectionNote").textContent = `${count} agent${count > 1 ? "s" : ""} reconnu${count > 1 ? "s" : ""}. Choisissez l’agent à coter.`;
+        if (openChoice) openPriorityAgentChoice();
+      } else {
+        $("#priorityDetectionNote").textContent = `${count} colonne${count > 1 ? "s" : ""} détectée${count > 1 ? "s" : ""}. Complétez uniquement les agents encore inconnus puis validez les noms.`;
+        showPriorityNameSetup(true);
+      }
+    }
+
+    async function analyzePriorityPhoto({ openChoice = false } = {}) {
+      const detected = detectPriorityGrid();
+      if (!detected) {
+        $("#priorityDetectionNote").textContent = "La zone colorée n'a pas été reconnue. Recadrez la photo sur le tableau et réessayez.";
+        $("#priorityColumns").innerHTML = "";
+        $("#priorityNameSetup").classList.add("hidden");
+        return;
+      }
+      priorityDetectedBox = detected.box;
+      const input = $("#priorityColumnCount");
+      input.value = detected.guessedColumns || 1;
+      const count = Number(input.value) || 1;
+      priorityAnalysis = {
+        statuses: readPriorityCells(priorityDetectedBox, count),
+        columnCount: count,
+        codes: new Array(count).fill("")
+      };
+      await finalizePriorityAnalysis({ openChoice });
+    }
+
+    async function rerunPriorityColumns() {
+      if (!priorityDetectedBox) return;
+      const count = Math.max(1, Math.min(12, Number($("#priorityColumnCount").value) || 1));
+      priorityAnalysis = {
+        statuses: readPriorityCells(priorityDetectedBox, count),
+        columnCount: count,
+        codes: new Array(count).fill("")
+      };
+      await finalizePriorityAnalysis({ openChoice: true });
+    }
+
+    function validatePriorityAgentNames() {
+      if (!priorityAnalysis?.statuses?.length) return;
+      const cards = [...document.querySelectorAll("#priorityColumns [data-priority-column]")];
+      const codes = new Array(priorityAnalysis.statuses.length).fill("");
+
+      for (let index = 0; index < priorityAnalysis.statuses.length; index += 1) {
+        const card = cards.find(item => Number(item.dataset.priorityColumn) === index);
+        const codeInput = card?.querySelector("[data-agent-code]");
+        const nameInput = card?.querySelector("[data-agent-full-name]");
+        const code = normalizeAgentCode(codeInput?.value || "");
+        const fullName = String(nameInput?.value || "").trim() || getAgentFullName(code);
+        if (!code) {
+          showToast(`Renseignez l’abréviation de la colonne ${index + 1}`);
+          codeInput?.focus();
+          return;
+        }
+        if (!fullName) {
+          showToast(`Renseignez le nom complet de ${code}`);
+          nameInput?.focus();
+          return;
+        }
+        rememberAgent(code, fullName);
+        codes[index] = code;
+      }
+
+      priorityAnalysis.codes = codes;
+      rememberAgentLayout(codes);
+      $("#priorityNameSetup").classList.add("hidden");
+      $("#priorityDetectionNote").textContent = `${codes.length} agent${codes.length > 1 ? "s" : ""} mémorisé${codes.length > 1 ? "s" : ""}.`;
+      showToast("Noms des agents mémorisés");
+      openPriorityAgentChoice();
+    }
+
+    function loadPriorityPhotoFile(file) {
+      if (!file) return;
+      if (priorityPhotoObjectUrl) URL.revokeObjectURL(priorityPhotoObjectUrl);
+      priorityPhotoObjectUrl = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = async () => {
+        priorityPhotoImage = image;
+        $("#priorityPhotoPreview").src = priorityPhotoObjectUrl;
+        $("#priorityPhotoWorkspace").classList.remove("hidden");
+        $("#priorityNameSetup").classList.add("hidden");
+        $("#priorityColumns").innerHTML = "";
+        $("#priorityDetectionNote").textContent = "Photo chargée. Analyse en cours…";
+        $("#priorityAgentChoiceModal").classList.add("hidden");
+        priorityDetectedBox = null;
+        priorityAnalysis = null;
+        await analyzePriorityPhoto({ openChoice: true });
+      };
+      image.onerror = () => showToast("Cette image n'a pas pu être ouverte");
+      image.src = priorityPhotoObjectUrl;
+    }
+
+    function selectedActivitiesSummary() {
+      const selectedIds = QUESTION_ORDER.filter(id => builderSelected.has(id));
+      const groups = new Map();
+      selectedIds.forEach(id => {
+        const question = QUESTION_BY_ID.get(id);
+        if (!question) return;
+        if (!groups.has(question.activityId)) groups.set(question.activityId, { activity: ACTIVITY_BY_ID.get(question.activityId), codes: new Set(), ids: [] });
+        const group = groups.get(question.activityId);
+        group.codes.add(normalizeCode(question.code));
+        group.ids.push(id);
+      });
+      return [...groups.values()];
+    }
+
+    function requestCommitBuilder() {
+      const editing = getObservation(store.builderEditingObservationId);
+      if (editing) { commitBuilder(); return; }
+      const groups = selectedActivitiesSummary();
+      if (!groups.length) return;
+      const modal = $("#prioritySummaryModal");
+      const ctx = store.priorityContext;
+      $("#prioritySummaryIntro").textContent = ctx?.agentName
+        ? `${ctx.agentName} — vérifiez les activités et le couple CT / CNT prévu avant de créer la fiche.`
+        : "Vérifiez les activités et le couple CT / CNT prévu avant de créer la fiche.";
+
+      let missing = false;
+      $("#prioritySummaryList").innerHTML = groups.map(group => {
+        const activity = group.activity;
+        const status = activity ? activityPriorityStatus(activity.id) : "";
+        const info = priorityLabel(status);
+        const codes = [...group.codes];
+        const ct = codes.filter(code => /^CT\s*\d/i.test(code) && !/^CNT/i.test(code));
+        const cnt = codes.filter(code => /^CNT\s*\d/i.test(code));
+        if (!ct.length || !cnt.length) missing = true;
+        const rowClass = ["red", "yellow", "green"].includes(status) ? status : "neutral";
+        return `
+          <div class="priority-summary-row ${rowClass}">
+            <strong>${escapeHtml(activity?.name || "Activité")}</strong>
+            <div class="priority-summary-meta">
+              ${status ? `<span class="priority-chip ${info.className}">${escapeHtml(info.text)}</span>` : ""}
+              ${ct.length ? ct.map(code => `<span class="competency-pill">${escapeHtml(compactCode(code))}</span>`).join("") : `<span class="competency-pill missing">CT manquant</span>`}
+              ${cnt.length ? cnt.map(code => `<span class="competency-pill">${escapeHtml(compactCode(code))}</span>`).join("") : `<span class="competency-pill missing">CNT manquant</span>`}
+            </div>
+          </div>`;
+      }).join("");
+
+      const warning = $("#prioritySummaryWarning");
+      const confirm = $("#prioritySummaryConfirm");
+      if (missing) {
+        warning.textContent = "Chaque activité de la séquence doit comporter au moins 1 CT et 1 CNT. Complétez la sélection avant de continuer.";
+        warning.classList.remove("hidden");
+        confirm.disabled = true;
+      } else {
+        warning.classList.add("hidden");
+        confirm.disabled = false;
+      }
+      modal.classList.remove("hidden");
+    }
+
     function todayISO() {
       const now = new Date();
       const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
@@ -1890,6 +2541,7 @@
         builderQuestioning: {},
         builderMode: "activity",
         builderEditingObservationId: null,
+        priorityContext: null,
         legacyMigrated: false
       };
     }
@@ -2075,6 +2727,7 @@
     }
 
     function renderHome() {
+      renderPriorityCurrent();
       const observations = store.observations;
       const complete = observations.filter(obs => completion(obs) === 100);
       const incomplete = observations.filter(obs => completion(obs) < 100);
@@ -2135,7 +2788,7 @@
       }).join("");
     }
 
-    function startNewObservation() {
+    function beginNewObservation() {
       $("#activityBuilderSearch").value = "";
       $("#globalQuestionSearch").value = "";
       store.builderEditingObservationId = null;
@@ -2150,6 +2803,87 @@
       store.builderMode = "activity";
       saveStore();
       goTo("builder");
+    }
+
+    function collectPriorityAgentCandidates() {
+      if (!priorityAnalysis?.statuses?.length) return [];
+      const codes = priorityAnalysis.codes || [];
+      return priorityAnalysis.statuses.map((columnStatuses, index) => {
+        const code = normalizeAgentCode(codes[index] || "");
+        const fullName = getAgentFullName(code);
+        const statuses = {};
+        PRIORITY_ROWS.forEach((activity, rowIndex) => {
+          statuses[activity.id] = columnStatuses[rowIndex] || "unknown";
+        });
+        return {
+          index,
+          code,
+          fullName,
+          statuses,
+          counts: priorityColumnCounts(columnStatuses)
+        };
+      });
+    }
+
+    function renderPriorityAgentChoice() {
+      const candidates = collectPriorityAgentCandidates();
+      const currentCode = normalizeAgentCode(store.priorityContext?.agentCode || "");
+      $("#priorityAgentChoiceList").innerHTML = candidates.map(candidate => {
+        const candidateCode = normalizeAgentCode(candidate.code);
+        const isActive = Boolean(currentCode && candidateCode && currentCode === candidateCode);
+        const title = candidate.fullName || candidate.code || `Colonne ${candidate.index + 1}`;
+        const subtitle = candidate.fullName && candidate.code
+          ? `${candidate.code} · colonne ${candidate.index + 1}`
+          : `Colonne ${candidate.index + 1}`;
+        const canUse = Boolean(candidate.fullName);
+        return `
+          <div class="agent-choice-row ${isActive ? "active" : ""}" data-agent-choice-row="${candidate.index}">
+            <div class="agent-choice-head">
+              <div>
+                <strong>${escapeHtml(title)}</strong>
+                <span>${escapeHtml(subtitle)}${isActive ? " · actuellement sélectionné" : ""}</span>
+              </div>
+              <div class="priority-counts" style="margin:0">
+                <span class="priority-chip red">🔴 ${candidate.counts.red}</span>
+                <span class="priority-chip yellow">🟡 ${candidate.counts.yellow}</span>
+                <span class="priority-chip green">🟢 ${candidate.counts.green}</span>
+              </div>
+            </div>
+            ${!canUse ? `<div class="agent-choice-missing">Renseignez d’abord le nom complet de cet agent dans l’analyse photo pour charger ses priorités.</div>` : ""}
+            <div class="agent-choice-actions">
+              <button class="btn btn-primary btn-small" type="button" data-start-with-priority-agent="${candidate.index}" ${canUse ? "" : "disabled"}>
+                ${isActive ? "Utiliser cet agent" : "Choisir cet agent"}
+              </button>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function choosePriorityAgentForNewObservation(index) {
+      const candidate = collectPriorityAgentCandidates().find(item => item.index === index);
+      if (!candidate || !candidate.fullName) return;
+      if (candidate.code) rememberAgent(candidate.code, candidate.fullName);
+      store.priorityContext = {
+        agentCode: candidate.code,
+        agentName: candidate.fullName,
+        statuses: candidate.statuses,
+        source: "photo",
+        updatedAt: new Date().toISOString()
+      };
+      saveStore();
+      renderPriorityCurrent();
+      $("#priorityAgentChoiceModal").classList.add("hidden");
+      beginNewObservation();
+    }
+
+    function startNewObservation() {
+      // Dès qu'une photo exploitable est chargée, on propose l'agent à coter.
+      // Le choix reste facultatif : l'utilisateur peut toujours continuer sans priorités.
+      if (priorityAnalysis?.statuses?.length) {
+        openPriorityAgentChoice();
+        return;
+      }
+      beginNewObservation();
     }
 
     function editObservationQuestions(obs) {
@@ -2235,7 +2969,7 @@
 
         return `
           <details
-            class="driving-activity"
+            class="driving-activity ${activityPriorityStatus(activity.id) ? `priority-${activityPriorityStatus(activity.id)}` : ""}"
             data-driving-activity="${escapeHtml(activity.id)}"
             ${openActivity ? "open" : ""}
           >
@@ -2248,6 +2982,7 @@
                     ${selectedInActivity} observation${selectedInActivity > 1 ? "s" : ""} sélectionnée${selectedInActivity > 1 ? "s" : ""}
                   </span>
                 </span>
+                ${activityPriorityStatus(activity.id) ? (() => { const p = priorityLabel(activityPriorityStatus(activity.id)); return `<span class="activity-priority-badge ${p.className}">${escapeHtml(p.text)}</span>`; })() : ""}
                 <span class="chevron">›</span>
               </div>
             </summary>
@@ -2642,7 +3377,8 @@
         meta: {
           obsDate: todayISO(),
           observerName: "",
-          agentName: "",
+          agentName: store.priorityContext?.agentName || "",
+          agentCode: store.priorityContext?.agentCode || "",
           mission: ""
         },
         questionIds: selectedIds,
@@ -3705,7 +4441,7 @@
       updateBuilderSummary();
     });
 
-    $("#createObservationBtn").addEventListener("click", commitBuilder);
+    $("#createObservationBtn").addEventListener("click", requestCommitBuilder);
 
     // Événements d'une observation.
     $("#observationBackBtn").addEventListener("click", () => goTo("home"));
@@ -3805,6 +4541,69 @@
       if (serviceWorkerRefreshing) return;
       serviceWorkerRefreshing = true;
       window.location.reload();
+    });
+
+
+    // v16 — analyse automatique, base agents et accès direct au choix de l’agent.
+    $("#priorityCameraBtn").addEventListener("click", () => $("#priorityCameraInput").click());
+    $("#priorityFileBtn").addEventListener("click", () => $("#priorityFileInput").click());
+    $("#priorityCameraInput").addEventListener("change", event => loadPriorityPhotoFile(event.target.files?.[0]));
+    $("#priorityFileInput").addEventListener("change", event => loadPriorityPhotoFile(event.target.files?.[0]));
+    $("#priorityAnalyzeBtn").addEventListener("click", () => analyzePriorityPhoto({ openChoice: true }));
+    $("#priorityColumnCount").addEventListener("change", () => rerunPriorityColumns());
+
+    $("#priorityColumns").addEventListener("input", event => {
+      const codeInput = event.target.closest("[data-agent-code]");
+      if (!codeInput) return;
+      const card = codeInput.closest("[data-priority-column]");
+      const nameInput = card?.querySelector("[data-agent-full-name]");
+      const known = getAgentFullName(codeInput.value);
+      if (nameInput && !nameInput.dataset.userEdited) nameInput.value = known || "";
+    });
+    $("#priorityColumns").addEventListener("input", event => {
+      const nameInput = event.target.closest("[data-agent-full-name]");
+      if (nameInput) nameInput.dataset.userEdited = "1";
+    });
+    $("#priorityValidateNamesBtn").addEventListener("click", validatePriorityAgentNames);
+
+    $("#priorityPhotoCard").addEventListener("click", event => {
+      if (!event.target.closest("[data-clear-priority]")) return;
+      store.priorityContext = null;
+      saveStore();
+      renderPriorityCurrent();
+      showToast("Priorités effacées");
+    });
+
+    $("#priorityAgentChoiceList").addEventListener("click", event => {
+      const button = event.target.closest("[data-start-with-priority-agent]");
+      if (!button) return;
+      choosePriorityAgentForNewObservation(Number(button.dataset.startWithPriorityAgent));
+    });
+    $("#priorityAgentChoiceManage").addEventListener("click", () => {
+      $("#priorityAgentChoiceModal").classList.add("hidden");
+      showPriorityNameSetup(true);
+      $("#priorityPhotoCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    $("#priorityAgentChoiceSkip").addEventListener("click", () => {
+      // Pas de blocage : on démarre une cotation classique sans warnings issus de la photo.
+      store.priorityContext = null;
+      saveStore();
+      renderPriorityCurrent();
+      $("#priorityAgentChoiceModal").classList.add("hidden");
+      beginNewObservation();
+    });
+    $("#priorityAgentChoiceCancel").addEventListener("click", () => $("#priorityAgentChoiceModal").classList.add("hidden"));
+    $("#priorityAgentChoiceModal").addEventListener("click", event => {
+      if (event.target === $("#priorityAgentChoiceModal")) $("#priorityAgentChoiceModal").classList.add("hidden");
+    });
+
+    $("#prioritySummaryCancel").addEventListener("click", () => $("#prioritySummaryModal").classList.add("hidden"));
+    $("#prioritySummaryConfirm").addEventListener("click", () => {
+      $("#prioritySummaryModal").classList.add("hidden");
+      commitBuilder();
+    });
+    $("#prioritySummaryModal").addEventListener("click", event => {
+      if (event.target === $("#prioritySummaryModal")) $("#prioritySummaryModal").classList.add("hidden");
     });
 
     // Démarrage.
