@@ -1513,7 +1513,7 @@
     }
 
 
-    /* v17 — correction détection du nombre de colonnes + priorités photo */
+    /* v18 — OCR des abréviations agents + correction détection du nombre de colonnes */
     .priority-card { margin-top: 14px; }
     .priority-card-head { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
     .priority-card-head h2 { margin:0 0 5px; font-size:1.05rem; }
@@ -2101,36 +2101,126 @@
       return bestScore >= 4 ? best : "";
     }
 
-    async function detectAgentCodesFromHeader(box, columnCount) {
-      const empty = new Array(columnCount).fill("");
-      if (!("TextDetector" in window) || !box || !columnCount) return empty;
+    let tesseractLoaderPromise = null;
+
+    function buildAgentHeaderCrop(box, columnCount, col) {
+      const source = $("#priorityPhotoCanvas");
+      const cellW = (box.x1 - box.x0) / columnCount;
+      const gridH = box.y1 - box.y0;
+      // On remonte suffisamment au-dessus de la première ligne colorée pour prendre le libellé agent.
+      const headerH = Math.max(52, Math.min(170, Math.round(gridH * .32)));
+      const top = Math.max(0, Math.round(box.y0 - headerH));
+      const bottom = Math.min(source.height, Math.round(box.y0 + 5));
+      const left = Math.max(0, Math.round(box.x0 + col * cellW - 4));
+      const right = Math.min(source.width, Math.round(box.x0 + (col + 1) * cellW + 4));
+      const cropW = Math.max(1, right - left);
+      const cropH = Math.max(1, bottom - top);
+
+      // Agrandissement + fort contraste : les abréviations du tableau sont petites sur les photos.
+      const scale = cropW < 260 ? 4 : 3;
+      const crop = document.createElement("canvas");
+      crop.width = Math.max(1, cropW * scale);
+      crop.height = Math.max(1, cropH * scale);
+      const cctx = crop.getContext("2d", { willReadFrequently: true });
+      cctx.imageSmoothingEnabled = true;
+      cctx.drawImage(source, left, top, cropW, cropH, 0, 0, crop.width, crop.height);
+
+      const image = cctx.getImageData(0, 0, crop.width, crop.height);
+      const d = image.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const gray = Math.round(d[i] * .299 + d[i + 1] * .587 + d[i + 2] * .114);
+        // Seuil volontairement doux pour conserver les lettres antialiasées.
+        const v = gray < 185 ? 0 : 255;
+        d[i] = d[i + 1] = d[i + 2] = v;
+        d[i + 3] = 255;
+      }
+      cctx.putImageData(image, 0, 0);
+      return crop;
+    }
+
+    function ensureTesseractLoaded() {
+      if (window.Tesseract?.createWorker) return Promise.resolve(true);
+      if (tesseractLoaderPromise) return tesseractLoaderPromise;
+      tesseractLoaderPromise = new Promise(resolve => {
+        const existing = document.querySelector('script[data-oa-tesseract]');
+        if (existing) {
+          existing.addEventListener("load", () => resolve(Boolean(window.Tesseract?.createWorker)), { once: true });
+          existing.addEventListener("error", () => resolve(false), { once: true });
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+        script.async = true;
+        script.dataset.oaTesseract = "1";
+        script.onload = () => resolve(Boolean(window.Tesseract?.createWorker));
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+      });
+      return tesseractLoaderPromise;
+    }
+
+    async function detectAgentCodesWithBrowserTextDetector(box, columnCount) {
+      const results = new Array(columnCount).fill("");
+      if (!("TextDetector" in window)) return results;
       try {
-        const source = $("#priorityPhotoCanvas");
         const detector = new TextDetector();
-        const cellW = (box.x1 - box.x0) / columnCount;
-        const gridH = box.y1 - box.y0;
-        const headerH = Math.max(48, Math.min(150, Math.round(gridH * .28)));
-        const top = Math.max(0, Math.round(box.y0 - headerH));
-        const bottom = Math.min(source.height, Math.round(box.y0 + 8));
-        const cropH = Math.max(1, bottom - top);
-        const results = [];
         for (let col = 0; col < columnCount; col += 1) {
-          const left = Math.max(0, Math.round(box.x0 + col * cellW - 6));
-          const right = Math.min(source.width, Math.round(box.x0 + (col + 1) * cellW + 6));
-          const crop = document.createElement("canvas");
-          crop.width = Math.max(1, right - left);
-          crop.height = cropH;
-          const cctx = crop.getContext("2d");
-          cctx.drawImage(source, left, top, crop.width, crop.height, 0, 0, crop.width, crop.height);
+          const crop = buildAgentHeaderCrop(box, columnCount, col);
           const found = await detector.detect(crop);
           const raw = (found || []).map(item => item.rawValue || "").join(" ");
-          results.push(extractAgentCodeCandidate(raw));
+          results[col] = extractAgentCodeCandidate(raw);
         }
-        return results;
       } catch (error) {
-        console.warn("Lecture automatique des noms indisponible", error);
-        return empty;
+        console.warn("TextDetector indisponible pour la lecture des agents", error);
       }
+      return results;
+    }
+
+    async function detectAgentCodesWithTesseract(box, columnCount, initialCodes) {
+      const results = [...initialCodes];
+      const missing = results.map((code, index) => code ? -1 : index).filter(index => index >= 0);
+      if (!missing.length) return results;
+      const loaded = await ensureTesseractLoaded();
+      if (!loaded) return results;
+
+      let worker = null;
+      try {
+        worker = await Tesseract.createWorker("eng");
+        if (worker.setParameters) {
+          await worker.setParameters({
+            tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ",
+            preserve_interword_spaces: "1",
+            user_defined_dpi: "300"
+          });
+        }
+        for (const col of missing) {
+          const crop = buildAgentHeaderCrop(box, columnCount, col);
+          const { data } = await worker.recognize(crop);
+          const raw = data?.text || "";
+          results[col] = extractAgentCodeCandidate(raw);
+        }
+      } catch (error) {
+        console.warn("OCR de secours indisponible", error);
+      } finally {
+        try { if (worker) await worker.terminate(); } catch (error) {}
+      }
+      return results;
+    }
+
+    async function detectAgentCodesFromHeader(box, columnCount) {
+      const empty = new Array(columnCount).fill("");
+      if (!box || !columnCount) return empty;
+
+      // 1) OCR natif du navigateur lorsqu'il existe.
+      let results = await detectAgentCodesWithBrowserTextDetector(box, columnCount);
+
+      // 2) Sur Chrome/Android/PC où TextDetector n'est pas toujours disponible,
+      // on utilise Tesseract en secours. Les couleurs restent, elles, lues entièrement hors ligne.
+      if (results.some(code => !code)) {
+        results = await detectAgentCodesWithTesseract(box, columnCount, results);
+      }
+
+      return results.map(normalizeAgentCode);
     }
 
     function priorityLabel(status) {
@@ -4586,7 +4676,7 @@
     });
 
 
-    // v17 — correction détection du nombre de colonnes, analyse automatique et base agents.
+    // v18 — détection des colonnes + OCR des abréviations + base agents.
     $("#priorityCameraBtn").addEventListener("click", () => $("#priorityCameraInput").click());
     $("#priorityFileBtn").addEventListener("click", () => $("#priorityFileInput").click());
     $("#priorityCameraInput").addEventListener("change", event => loadPriorityPhotoFile(event.target.files?.[0]));
