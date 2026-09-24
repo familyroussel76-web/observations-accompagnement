@@ -1513,7 +1513,7 @@
     }
 
 
-    /* v16 — priorités photo, base agents et accès direct au choix de l'agent */
+    /* v17 — correction détection du nombre de colonnes + priorités photo */
     .priority-card { margin-top: 14px; }
     .priority-card-head { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
     .priority-card-head h2 { margin:0 0 5px; font-size:1.05rem; }
@@ -2199,6 +2199,44 @@
       return best;
     }
 
+    // Regroupe les bandes colorées séparées uniquement par de fines lignes de grille.
+    // Sans cela, une ligne horizontale/verticale de 1 à 3 px coupe le tableau en morceaux
+    // et peut faire surestimer fortement le nombre d'agents (ex. 12 au lieu de 4).
+    function largestMergedRun(counts, threshold, maxGap = 3) {
+      let best = null;
+      let start = null;
+      let lastGood = null;
+      let score = 0;
+
+      const closeCandidate = () => {
+        if (start === null || lastGood === null) return;
+        const candidate = {
+          start,
+          end: lastGood,
+          length: lastGood - start + 1,
+          score
+        };
+        if (!best || candidate.length > best.length || (candidate.length === best.length && candidate.score > best.score)) {
+          best = candidate;
+        }
+        start = null;
+        lastGood = null;
+        score = 0;
+      };
+
+      for (let i = 0; i < counts.length; i += 1) {
+        if (counts[i] >= threshold) {
+          if (start === null) start = i;
+          lastGood = i;
+          score += counts[i];
+        } else if (start !== null && lastGood !== null && i - lastGood > maxGap) {
+          closeCandidate();
+        }
+      }
+      closeCandidate();
+      return best;
+    }
+
     function preparePriorityCanvas(image) {
       const canvas = $("#priorityPhotoCanvas");
       const maxWidth = 1200;
@@ -2230,8 +2268,11 @@
 
       const maxRow = Math.max(...rowCounts);
       if (!maxRow || maxRow < width * .12) return null;
-      let yRun = largestRun(rowCounts, Math.max(12, maxRow * .24));
-      if (!yRun || yRun.length < 80) yRun = largestRun(rowCounts, Math.max(8, maxRow * .14));
+
+      // Les 15 lignes du tableau sont séparées par de fines bordures. On les fusionne
+      // au lieu de ne garder qu'un seul bloc continu de couleur.
+      let yRun = largestMergedRun(rowCounts, Math.max(12, maxRow * .24), 4);
+      if (!yRun || yRun.length < 80) yRun = largestMergedRun(rowCounts, Math.max(8, maxRow * .14), 5);
       if (!yRun) return null;
 
       const colCounts = new Array(width).fill(0);
@@ -2244,13 +2285,14 @@
         colCounts[x] = count;
       }
       const maxCol = Math.max(...colCounts);
-      let xRun = largestRun(colCounts, Math.max(10, maxCol * .24));
-      if (!xRun) xRun = largestRun(colCounts, Math.max(6, maxCol * .14));
+      let xRun = largestMergedRun(colCounts, Math.max(10, maxCol * .24), 4);
+      if (!xRun) xRun = largestMergedRun(colCounts, Math.max(6, maxCol * .14), 5);
       if (!xRun) return null;
 
       const box = { x0: xRun.start, x1: xRun.end + 1, y0: yRun.start, y1: yRun.end + 1, width, height };
       const rowHeight = (box.y1 - box.y0) / PRIORITY_ROWS.length;
-      const guessedColumns = Math.max(1, Math.min(12, Math.round((box.x1 - box.x0) / Math.max(1, rowHeight * 5.7))));
+      const rawGuess = (box.x1 - box.x0) / Math.max(1, rowHeight * 5.7);
+      const guessedColumns = Math.max(1, Math.min(12, Math.round(rawGuess)));
       return { box, guessedColumns, data, width, height };
     }
 
@@ -4544,7 +4586,7 @@
     });
 
 
-    // v16 — analyse automatique, base agents et accès direct au choix de l’agent.
+    // v17 — correction détection du nombre de colonnes, analyse automatique et base agents.
     $("#priorityCameraBtn").addEventListener("click", () => $("#priorityCameraInput").click());
     $("#priorityFileBtn").addEventListener("click", () => $("#priorityFileInput").click());
     $("#priorityCameraInput").addEventListener("change", event => loadPriorityPhotoFile(event.target.files?.[0]));
